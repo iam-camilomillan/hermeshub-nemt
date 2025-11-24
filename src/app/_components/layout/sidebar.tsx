@@ -37,7 +37,6 @@ import {
   IconDotsVertical,
   IconLayoutDashboard,
   IconListDetails,
-  IconLogout,
   IconMoon,
   IconRoute,
   IconSettings,
@@ -45,6 +44,9 @@ import {
   IconUsersGroup,
   IconWallet,
 } from "@tabler/icons-react";
+
+/* Components Imports */
+import LogoutButton from "./logout-button";
 
 /* Sidebar Groups */
 const sidebarGroups = [
@@ -176,7 +178,7 @@ export default function AppSidebar({
               </DropdownMenuTrigger>
 
               <DropdownMenuContent
-                className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg"
+                className="w-(--radix-dropdown-menu-trigger-width) min-w-48 rounded-lg"
                 side="right"
                 align="end"
                 sideOffset={4}
@@ -224,9 +226,8 @@ export default function AppSidebar({
 
                 <DropdownMenuSeparator />
 
-                <DropdownMenuItem>
-                  <IconLogout />
-                  Log out
+                <DropdownMenuItem asChild>
+                  <LogoutButton />
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

@@ -1,7 +1,6 @@
-import { relations } from "drizzle-orm";
+/* Drizzle Imports */
 import {
   boolean,
-  index,
   pgTable,
   pgTableCreator,
   text,
@@ -10,7 +9,7 @@ import {
 
 export const createTable = pgTableCreator((name) => `pg-drizzle_${name}`);
 
-export const posts = createTable(
+/* export const posts = createTable(
   "post",
   (d) => ({
     id: d.integer().primaryKey().generatedByDefaultAsIdentity(),
@@ -29,16 +28,23 @@ export const posts = createTable(
     index("created_by_idx").on(t.createdById),
     index("name_idx").on(t.name),
   ],
-);
+); */
 
+/* BETTERAUTH SCHEMAS */
 export const user = pgTable("user", {
   id: text("id").primaryKey(),
+  first_name: text("first_name").notNull(),
+  last_name: text("last_name").notNull(),
   name: text("name").notNull(),
+  username: text("username").notNull().unique(),
+  displayUsername: text("display_username").notNull(),
   email: text("email").notNull().unique(),
   emailVerified: boolean("email_verified")
     .$defaultFn(() => false)
     .notNull(),
   image: text("image"),
+  role: text("role").notNull(),
+
   createdAt: timestamp("created_at")
     .$defaultFn(() => /* @__PURE__ */ new Date())
     .notNull(),
@@ -49,12 +55,14 @@ export const user = pgTable("user", {
 
 export const session = pgTable("session", {
   id: text("id").primaryKey(),
-  expiresAt: timestamp("expires_at").notNull(),
   token: text("token").notNull().unique(),
+  expiresAt: timestamp("expires_at").notNull(),
+  ipAddress: text("ip_address"),
+
   createdAt: timestamp("created_at").notNull(),
   updatedAt: timestamp("updated_at").notNull(),
-  ipAddress: text("ip_address"),
   userAgent: text("user_agent"),
+
   userId: text("user_id")
     .notNull()
     .references(() => user.id, { onDelete: "cascade" }),
@@ -64,9 +72,6 @@ export const account = pgTable("account", {
   id: text("id").primaryKey(),
   accountId: text("account_id").notNull(),
   providerId: text("provider_id").notNull(),
-  userId: text("user_id")
-    .notNull()
-    .references(() => user.id, { onDelete: "cascade" }),
   accessToken: text("access_token"),
   refreshToken: text("refresh_token"),
   idToken: text("id_token"),
@@ -74,8 +79,13 @@ export const account = pgTable("account", {
   refreshTokenExpiresAt: timestamp("refresh_token_expires_at"),
   scope: text("scope"),
   password: text("password"),
+
   createdAt: timestamp("created_at").notNull(),
   updatedAt: timestamp("updated_at").notNull(),
+
+  userId: text("user_id")
+    .notNull()
+    .references(() => user.id, { onDelete: "cascade" }),
 });
 
 export const verification = pgTable("verification", {
@@ -83,6 +93,7 @@ export const verification = pgTable("verification", {
   identifier: text("identifier").notNull(),
   value: text("value").notNull(),
   expiresAt: timestamp("expires_at").notNull(),
+
   createdAt: timestamp("created_at").$defaultFn(
     () => /* @__PURE__ */ new Date(),
   ),
@@ -90,16 +101,3 @@ export const verification = pgTable("verification", {
     () => /* @__PURE__ */ new Date(),
   ),
 });
-
-export const userRelations = relations(user, ({ many }) => ({
-  account: many(account),
-  session: many(session),
-}));
-
-export const accountRelations = relations(account, ({ one }) => ({
-  user: one(user, { fields: [account.userId], references: [user.id] }),
-}));
-
-export const sessionRelations = relations(session, ({ one }) => ({
-  user: one(user, { fields: [session.userId], references: [user.id] }),
-}));

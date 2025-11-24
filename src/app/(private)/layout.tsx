@@ -1,3 +1,9 @@
+/* Next Imports */
+import { redirect } from "next/navigation";
+
+/* Auth Imports */
+import { getSession } from "~/server/better-auth/server";
+
 /* Shadcn Imports */
 import {
   SidebarInset,
@@ -5,17 +11,23 @@ import {
   SidebarTrigger,
 } from "~/app/_components/ui/sidebar";
 import { Separator } from "~/app/_components/ui/separator";
+import { Button } from "~/app/_components/ui/button";
 
 /* Components Imports */
 import Sidebar from "~/app/_components/layout/sidebar";
-import { Button } from "~/app/_components/ui/button";
+
+/* Icons Imports */
 import { IconBell } from "@tabler/icons-react";
 
-export default function PrivateLayout({
+export default async function PrivateLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const session = await getSession();
+
+  if (!session) redirect("/login");
+
   return (
     <SidebarProvider>
       <Sidebar variant="inset" />

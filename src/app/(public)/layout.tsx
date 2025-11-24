@@ -1,12 +1,26 @@
-export default function PublicLayout({
+/* Next Imports */
+import { redirect } from "next/navigation";
+
+/* Auth Imports */
+import { getSession } from "~/server/better-auth/server";
+
+/* Components imports */
+import Navbar from "~/app/_components/layout/navbar";
+
+export default async function PublicLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const session = await getSession();
+
+  if (session) redirect("/dashboard");
+
   return (
-    <div className="flex min-h-screen flex-col">
-      A very beautiful navigation bar
-      <main className="flex-1">{children}</main>
-    </div>
+    <>
+      <Navbar />
+
+      {children}
+    </>
   );
 }

@@ -1,5 +1,7 @@
+/* Drizzle Imports */
 import { type Config } from "drizzle-kit";
 
+/* ENV Imports */
 import { env } from "~/env";
 
 export default {
