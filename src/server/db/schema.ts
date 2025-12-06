@@ -1,34 +1,71 @@
 /* Drizzle Imports */
 import {
+  text,
   boolean,
+  timestamp,
   pgTable,
   pgTableCreator,
-  text,
-  timestamp,
 } from "drizzle-orm/pg-core";
 
+/* Table Creator */
 export const createTable = pgTableCreator((name) => `pg-drizzle_${name}`);
 
-/* export const posts = createTable(
-  "post",
-  (d) => ({
-    id: d.integer().primaryKey().generatedByDefaultAsIdentity(),
-    name: d.varchar({ length: 256 }),
-    createdById: d
-      .varchar({ length: 255 })
-      .notNull()
-      .references(() => user.id),
-    createdAt: d
-      .timestamp({ withTimezone: true })
-      .$defaultFn(() => new Date())
-      .notNull(),
-    updatedAt: d.timestamp({ withTimezone: true }).$onUpdate(() => new Date()),
-  }),
-  (t) => [
-    index("created_by_idx").on(t.createdById),
-    index("name_idx").on(t.name),
-  ],
-); */
+/* Vehicles Schema */
+export const vehicle = pgTable("vehicle", {
+  id: text("id").primaryKey(),
+  public_id: text("public_id").notNull().unique(),
+  status: text("status").notNull().default("active"),
+  name: text("name").notNull(),
+  make: text("make").notNull(),
+  model: text("model").notNull(),
+  year: text("year").notNull(),
+  vin: text("vin").notNull(),
+  license_plate: text("license_plate").notNull(),
+  color: text("color").notNull(),
+  mileage: text("mileage").notNull(),
+  registration_date: text("registration_date").notNull(),
+  registration_expiration_date: text("registration_expiration_date").notNull(),
+  level_of_service: text("level_of_service").notNull(),
+  base_location: text("base_location").notNull(),
+
+  createdAt: timestamp("created_at").notNull(),
+  updatedAt: timestamp("updated_at").notNull(),
+
+  companyId: text("company_id")
+    .notNull()
+    .references(() => company.id),
+});
+
+/* Payer Schema */
+export const payer = pgTable("payer", {
+  id: text("id").primaryKey(),
+  public_id: text("public_id").notNull().unique(),
+  name: text("name").notNull(),
+  email: text("email").notNull(),
+  additional_email: text("additional_email"),
+  phone_number: text("phone_number").notNull(),
+  additional_phone_number: text("additional_phone_number"),
+  label_color: text("label_color").notNull(),
+  signature_at_pu: boolean("signature_at_pu").notNull().default(false),
+  signature_at_do: boolean("signature_at_do").notNull().default(false),
+
+  createdAt: timestamp("created_at").notNull(),
+  updatedAt: timestamp("updated_at").notNull(),
+
+  companyId: text("company_id")
+    .notNull()
+    .references(() => company.id),
+});
+
+/* Company Schema */
+export const company = pgTable("company", {
+  id: text("id").primaryKey(),
+  public_id: text("public_id").notNull().unique(),
+  name: text("name").notNull(),
+
+  createdAt: timestamp("created_at").notNull(),
+  updatedAt: timestamp("updated_at").notNull(),
+});
 
 /* BETTERAUTH SCHEMAS */
 export const user = pgTable("user", {
@@ -43,7 +80,11 @@ export const user = pgTable("user", {
     .$defaultFn(() => false)
     .notNull(),
   image: text("image"),
+
   role: text("role").notNull(),
+  companyId: text("company_id")
+    .notNull()
+    .references(() => company.id),
 
   createdAt: timestamp("created_at")
     .$defaultFn(() => /* @__PURE__ */ new Date())

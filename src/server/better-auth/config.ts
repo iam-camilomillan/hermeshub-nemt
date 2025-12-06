@@ -12,6 +12,10 @@ export const auth = betterAuth({
   database: drizzleAdapter(db, {
     provider: "pg",
   }),
+  session: {
+    expiresIn: 60 * 60 * 24 * 30,
+    updateAge: 60 * 60 * 24,
+  },
   user: {
     additionalFields: {
       first_name: {
@@ -26,6 +30,10 @@ export const auth = betterAuth({
         type: "string",
         required: true,
       },
+      companyId: {
+        type: "string",
+        required: true,
+      },
     },
   },
   pages: {
@@ -34,7 +42,13 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
   },
-  plugins: [username({})],
+  plugins: [
+    username({
+      usernameValidator: (username) => {
+        return /^[a-zA-Z0-9_.@]+$/.test(username);
+      },
+    }),
+  ],
 });
 
 export type Session = typeof auth.$Infer.Session;

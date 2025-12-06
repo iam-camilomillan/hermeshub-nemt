@@ -1,11 +1,11 @@
 {
-  "id": "377291ae-63cc-4b80-accf-71ef7a806f33",
-  "prevId": "e27ab53c-11d6-4930-93e2-a10ca6153ab3",
+  "id": "ad516c37-d4b3-4833-8f2a-7ddca6102b61",
+  "prevId": "8634edc6-644a-4dd3-81af-9e4b7657c1ef",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
-    "public.test_account": {
-      "name": "test_account",
+    "public.account": {
+      "name": "account",
       "schema": "",
       "columns": {
         "id": {
@@ -89,10 +89,10 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "test_account_user_id_test_user_id_fk": {
-          "name": "test_account_user_id_test_user_id_fk",
-          "tableFrom": "test_account",
-          "tableTo": "test_user",
+        "account_user_id_user_id_fk": {
+          "name": "account_user_id_user_id_fk",
+          "tableFrom": "account",
+          "tableTo": "user",
           "columnsFrom": [
             "user_id"
           ],
@@ -109,8 +109,8 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.test_user": {
-      "name": "test_user",
+    "public.company": {
+      "name": "company",
       "schema": "",
       "columns": {
         "id": {
@@ -119,44 +119,14 @@
           "primaryKey": true,
           "notNull": true
         },
-        "first_name": {
-          "name": "first_name",
+        "public_id": {
+          "name": "public_id",
           "type": "text",
           "primaryKey": false,
           "notNull": true
         },
-        "last_name": {
-          "name": "last_name",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "username": {
-          "name": "username",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "email": {
-          "name": "email",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "email_verified": {
-          "name": "email_verified",
-          "type": "boolean",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "image": {
-          "name": "image",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "role": {
-          "name": "role",
+        "name": {
+          "name": "name",
           "type": "text",
           "primaryKey": false,
           "notNull": true
@@ -178,18 +148,11 @@
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
-        "test_user_username_unique": {
-          "name": "test_user_username_unique",
+        "company_public_id_unique": {
+          "name": "company_public_id_unique",
           "nullsNotDistinct": false,
           "columns": [
-            "username"
-          ]
-        },
-        "test_user_email_unique": {
-          "name": "test_user_email_unique",
-          "nullsNotDistinct": false,
-          "columns": [
-            "email"
+            "public_id"
           ]
         }
       },
@@ -197,8 +160,8 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.test_verification": {
-      "name": "test_verification",
+    "public.payer": {
+      "name": "payer",
       "schema": "",
       "columns": {
         "id": {
@@ -207,21 +170,57 @@
           "primaryKey": true,
           "notNull": true
         },
-        "identifier": {
-          "name": "identifier",
+        "public_id": {
+          "name": "public_id",
           "type": "text",
           "primaryKey": false,
           "notNull": true
         },
-        "value": {
-          "name": "value",
+        "name": {
+          "name": "name",
           "type": "text",
           "primaryKey": false,
           "notNull": true
         },
-        "expires_at": {
-          "name": "expires_at",
-          "type": "timestamp",
+        "email": {
+          "name": "email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "additional_email": {
+          "name": "additional_email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "phone_number": {
+          "name": "phone_number",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "additional_phone_number": {
+          "name": "additional_phone_number",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "label_color": {
+          "name": "label_color",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "signature_at_pu": {
+          "name": "signature_at_pu",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "signature_at_do": {
+          "name": "signature_at_do",
+          "type": "boolean",
           "primaryKey": false,
           "notNull": true
         },
@@ -229,25 +228,81 @@
           "name": "created_at",
           "type": "timestamp",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
         "updated_at": {
           "name": "updated_at",
           "type": "timestamp",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
+        },
+        "company_id": {
+          "name": "company_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
         }
       },
       "indexes": {},
-      "foreignKeys": {},
+      "foreignKeys": {
+        "payer_company_id_company_id_fk": {
+          "name": "payer_company_id_company_id_fk",
+          "tableFrom": "payer",
+          "tableTo": "company",
+          "columnsFrom": [
+            "company_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
+      "uniqueConstraints": {
+        "payer_public_id_unique": {
+          "name": "payer_public_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "public_id"
+          ]
+        },
+        "payer_email_unique": {
+          "name": "payer_email_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "email"
+          ]
+        },
+        "payer_additional_email_unique": {
+          "name": "payer_additional_email_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "additional_email"
+          ]
+        },
+        "payer_phone_number_unique": {
+          "name": "payer_phone_number_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "phone_number"
+          ]
+        },
+        "payer_additional_phone_number_unique": {
+          "name": "payer_additional_phone_number_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "additional_phone_number"
+          ]
+        }
+      },
       "policies": {},
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.tests_session": {
-      "name": "tests_session",
+    "public.session": {
+      "name": "session",
       "schema": "",
       "columns": {
         "id": {
@@ -301,10 +356,10 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "tests_session_user_id_test_user_id_fk": {
-          "name": "tests_session_user_id_test_user_id_fk",
-          "tableFrom": "tests_session",
-          "tableTo": "test_user",
+        "session_user_id_user_id_fk": {
+          "name": "session_user_id_user_id_fk",
+          "tableFrom": "session",
+          "tableTo": "user",
           "columnsFrom": [
             "user_id"
           ],
@@ -317,14 +372,255 @@
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
-        "tests_session_token_unique": {
-          "name": "tests_session_token_unique",
+        "session_token_unique": {
+          "name": "session_token_unique",
           "nullsNotDistinct": false,
           "columns": [
             "token"
           ]
         }
       },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.user": {
+      "name": "user",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "first_name": {
+          "name": "first_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "last_name": {
+          "name": "last_name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "username": {
+          "name": "username",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "display_username": {
+          "name": "display_username",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "email": {
+          "name": "email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "email_verified": {
+          "name": "email_verified",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "image": {
+          "name": "image",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "role": {
+          "name": "role",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "company_id": {
+          "name": "company_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "'1001'"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "user_company_id_company_id_fk": {
+          "name": "user_company_id_company_id_fk",
+          "tableFrom": "user",
+          "tableTo": "company",
+          "columnsFrom": [
+            "company_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "user_username_unique": {
+          "name": "user_username_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "username"
+          ]
+        },
+        "user_email_unique": {
+          "name": "user_email_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "email"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.vehicle": {
+      "name": "vehicle",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "public_id": {
+          "name": "public_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "company_id": {
+          "name": "company_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "vehicle_company_id_company_id_fk": {
+          "name": "vehicle_company_id_company_id_fk",
+          "tableFrom": "vehicle",
+          "tableTo": "company",
+          "columnsFrom": [
+            "company_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "vehicle_public_id_unique": {
+          "name": "vehicle_public_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "public_id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.verification": {
+      "name": "verification",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "identifier": {
+          "name": "identifier",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "value": {
+          "name": "value",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "expires_at": {
+          "name": "expires_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
       "policies": {},
       "checkConstraints": {},
       "isRLSEnabled": false

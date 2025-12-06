@@ -22,7 +22,11 @@ export default function LogoutButton() {
       },
     });
   return (
-    <Button variant="ghost" className="w-full" onClick={signout}>
+    <Button
+      variant="ghost"
+      className="w-full hover:text-red-400"
+      onClick={signout}
+    >
       <IconLogout />
       Log out
     </Button>

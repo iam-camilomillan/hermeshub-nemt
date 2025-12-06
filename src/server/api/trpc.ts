@@ -7,12 +7,20 @@
  * need to use are documented accordingly near the end.
  */
 
-import { initTRPC, TRPCError } from "@trpc/server";
-import superjson from "superjson";
+/* Zod Imports */
 import { ZodError } from "zod";
 
+/* tRPC Imports */
+import { initTRPC, TRPCError } from "@trpc/server";
+
+/* Auth Imports */
 import { auth } from "~/server/better-auth";
+
+/* Database Imports */
 import { db } from "~/server/db";
+
+/* Utils Imports */
+import superjson from "superjson";
 
 /**
  * 1. CONTEXT

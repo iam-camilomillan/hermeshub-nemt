@@ -48,6 +48,9 @@ import {
 /* Components Imports */
 import LogoutButton from "./logout-button";
 
+/* Auth Imports */
+import { type Session } from "~/server/better-auth/config";
+
 /* Sidebar Groups */
 const sidebarGroups = [
   {
@@ -76,12 +79,12 @@ const sidebarGroups = [
       {
         label: "Members",
         icon: IconAddressBook,
-        href: "/trips",
+        href: "/members",
       },
       {
         label: "Vehicles",
         icon: IconBus,
-        href: "/trips",
+        href: "/vehicles",
       },
     ],
   },
@@ -102,9 +105,10 @@ const sidebarGroups = [
   },
 ];
 
-export default function AppSidebar({
+export default async function AppSidebar({
+  session,
   ...props
-}: React.ComponentProps<typeof Sidebar>) {
+}: { session: Session } & React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar collapsible="offcanvas" {...props}>
       <SidebarHeader>
@@ -159,17 +163,22 @@ export default function AppSidebar({
                 >
                   <Avatar className="h-8 w-8 rounded-lg">
                     <AvatarImage
-                      src="https://github.com/shadcn.png"
+                      src={
+                        session.user?.image ?? "https://github.com/shadcn.png"
+                      }
                       alt="Camilo Millan"
                     />
                     <AvatarFallback className="rounded-lg">CN</AvatarFallback>
                   </Avatar>
 
                   <div className="grid flex-1 text-left text-sm leading-tight">
-                    <span className="truncate font-medium">Camilo Millan</span>
+                    <span className="truncate font-medium">
+                      {session.user?.first_name} {session.user?.last_name}{" "}
+                      &#8226; {session.user?.role}
+                    </span>
 
                     <span className="text-muted-foreground truncate text-xs">
-                      iam.camilomillan@gmail.com
+                      {session.user?.username}
                     </span>
                   </div>
 
@@ -187,19 +196,22 @@ export default function AppSidebar({
                   <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                     <Avatar className="h-8 w-8 rounded-lg">
                       <AvatarImage
-                        src="https://github.com/shadcn.png"
-                        alt="Camilo Millan"
+                        src={
+                          session.user?.image ?? "https://github.com/shadcn.png"
+                        }
+                        alt={"Camilo Millan"}
                       />
                       <AvatarFallback className="rounded-lg">CN</AvatarFallback>
                     </Avatar>
 
                     <div className="grid flex-1 text-left text-sm leading-tight">
                       <span className="truncate font-medium">
-                        Camilo Millan
+                        {session.user?.first_name} {session.user?.last_name}{" "}
+                        &#8226; {session.user?.role}
                       </span>
 
                       <span className="text-muted-foreground truncate text-xs">
-                        iam.camilomillan@gmail.com
+                        {session.user?.username}
                       </span>
                     </div>
                   </div>
