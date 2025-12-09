@@ -25,10 +25,10 @@ import { IconPlus, IconX } from "@tabler/icons-react";
 /* Store imports */
 import { useDrawerStore } from "~/store/useTableStore";
 
-/* Types Imports */
-import { tableFilterSettings } from "~/app/(private)/payers/utils/table_filter_settings";
+/* Utils Imports */
+import { tableFilterSettings } from "~/app/(private)/vehicles/utils/table_filter_settings";
 
-/* Types definitios */
+/* Interface Definitions */
 interface TableToolbarProps<TData> {
   table: Table<TData>;
 }
@@ -94,7 +94,7 @@ export default function TableToolbar<TData>({
       {/* Add item button */}
       <Button size={"sm"} className="ml-auto" onClick={handleAddButton}>
         <IconPlus />
-        <span>Add Payer</span>
+        <span>Add Vehicle</span>
       </Button>
     </div>
   );

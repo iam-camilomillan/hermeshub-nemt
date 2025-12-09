@@ -16,7 +16,7 @@ export const vehicleRouter = createTRPCRouter({
       z.object({
         id: z.string(),
         public_id: z.string(),
-        name: z.string(),
+
         make: z.string(),
         model: z.string(),
         year: z.string(),
@@ -36,7 +36,7 @@ export const vehicleRouter = createTRPCRouter({
           .update(vehicle)
           .set({
             public_id: input.public_id,
-            name: input.name,
+
             make: input.make,
             model: input.model,
             year: input.year,
@@ -57,9 +57,8 @@ export const vehicleRouter = createTRPCRouter({
       } else {
         await ctx.db.insert(vehicle).values({
           id: crypto.randomUUID(),
-
           public_id: input.public_id,
-          name: input.name,
+
           make: input.make,
           model: input.model,
           year: input.year,

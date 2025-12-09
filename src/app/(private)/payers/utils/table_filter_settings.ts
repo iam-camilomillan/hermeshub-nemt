@@ -1,6 +1,4 @@
 export const tableFilterSettings = {
-  db_table: "payer",
-
   defaultColumnsHidden: [],
   searchBy: {
     placeholder: "Filter payers...",

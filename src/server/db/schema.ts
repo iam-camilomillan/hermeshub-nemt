@@ -3,6 +3,7 @@ import {
   text,
   boolean,
   timestamp,
+  date,
   pgTable,
   pgTableCreator,
 } from "drizzle-orm/pg-core";
@@ -15,7 +16,6 @@ export const vehicle = pgTable("vehicle", {
   id: text("id").primaryKey(),
   public_id: text("public_id").notNull().unique(),
   status: text("status").notNull().default("active"),
-  name: text("name").notNull(),
   make: text("make").notNull(),
   model: text("model").notNull(),
   year: text("year").notNull(),
@@ -23,8 +23,10 @@ export const vehicle = pgTable("vehicle", {
   license_plate: text("license_plate").notNull(),
   color: text("color").notNull(),
   mileage: text("mileage").notNull(),
-  registration_date: text("registration_date").notNull(),
-  registration_expiration_date: text("registration_expiration_date").notNull(),
+  registration_date: date("registration_date", { mode: "string" }).notNull(),
+  registration_expiration_date: date("registration_expiration_date", {
+    mode: "string",
+  }).notNull(),
   level_of_service: text("level_of_service").notNull(),
   base_location: text("base_location").notNull(),
 

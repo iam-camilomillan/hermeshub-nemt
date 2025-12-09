@@ -29,6 +29,34 @@
       "when": 1765057206260,
       "tag": "0003_optimal_the_anarchist",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1765243960843,
+      "tag": "0004_omniscient_scourge",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1765248107597,
+      "tag": "0005_even_tinkerer",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1765248906117,
+      "tag": "0006_amusing_jubilee",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1765249680150,
+      "tag": "0007_superb_hemingway",
+      "breakpoints": true
     }
   ]
 }

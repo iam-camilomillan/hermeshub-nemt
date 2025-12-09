@@ -1,0 +1,2 @@
+ALTER TABLE "vehicle" ALTER COLUMN "registration_date" TYPE date USING "registration_date"::date;
+ALTER TABLE "vehicle" ALTER COLUMN "registration_expiration_date" TYPE date USING "registration_expiration_date"::date;
