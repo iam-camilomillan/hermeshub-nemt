@@ -53,8 +53,8 @@ import { useDrawerStore } from "~/store/useTableStore";
 /* API imports */
 import { api } from "~/trpc/react";
 
-/* Default Payer Data */
-const defaultPayerData = {
+/* Default Item Data */
+const defaultItemData = {
   id: "",
   public_id: "",
   name: "",
@@ -84,38 +84,45 @@ export default function Drawer() {
   const drawerData = useDrawerStore((state) => state.drawerData);
 
   /* Local states */
-  const [payerState, setPayerState] = useState(defaultPayerData);
+  const [itemState, setItemState] = useState(defaultItemData);
   const [dialogOpen, setDialogOpen] = useState(false);
 
-  /* API Request */
+  /* API request */
   const request = api.payer.savePayer.useMutation({
     onSuccess: () => {
       useDrawerStore.setState({
         isDrawerOpen: false,
-        drawerData: defaultPayerData,
+        drawerData: defaultItemData,
         refreshData: !useDrawerStore.getState().refreshData,
       });
 
-      toast.success("Payer created successfully", {
-        action: {
-          label: "Undo",
-          onClick: () => console.log("Undo"),
+      toast.success(
+        itemState.id
+          ? "Payer updated successfully"
+          : "Payer created successfully",
+        {
+          action: {
+            label: "Undo",
+            onClick: () => console.log("Undo"),
+          },
         },
-      });
+      );
     },
 
     onError: () => {
-      toast.error("Error creating payer");
+      toast.error(
+        itemState.id ? "Error updating payer" : "Error creating payer",
+      );
     },
   });
 
-  /* Handle Close Sheet */
+  /* Handle close sheet */
   const handleCloseSheet = () => {
     if (request.isPending) return;
 
-    if (payerState === defaultPayerData || payerState === drawerData) {
+    if (itemState === defaultItemData || itemState === drawerData) {
       useDrawerStore.setState({
-        drawerData: defaultPayerData,
+        drawerData: null,
         isDrawerOpen: false,
       });
 
@@ -125,48 +132,58 @@ export default function Drawer() {
     setDialogOpen(true);
   };
 
-  /* Handle Close Dialog */
+  /* Handle close dialog */
   const handleCloseDialog = () => {
     setDialogOpen(false);
   };
 
-  /* Handle Discard */
+  /* Handle discard */
   const handleDiscard = () => {
     /* If request is pending, do nothing */
     if (request.isPending) return;
 
     /* Reset global states */
     useDrawerStore.setState({
-      drawerData: defaultPayerData,
+      drawerData: null,
       isDrawerOpen: false,
     });
 
     /* Reset local states */
-    setPayerState(defaultPayerData);
+    setItemState(defaultItemData);
 
     /* Reset dialog */
     setDialogOpen(false);
   };
 
-  /* Save Payer */
-  const savePayer = () => {
+  /* Save item */
+  const saveItem = () => {
+    /* If request is pending, do nothing */
+    if (request.isPending) return;
+
+    /* If item state is default, do nothing */
+    if (itemState === defaultItemData) return;
+
+    /* If item state is drawer data, do nothing */
+    if (itemState === drawerData) return;
+
+    /* Make request */
     request.mutateAsync({
-      id: payerState.id,
-      public_id: payerState.public_id,
-      name: payerState.name,
-      email: payerState.email,
-      additional_email: payerState.additional_email,
-      phone_number: payerState.phone_number,
-      additional_phone_number: payerState.additional_phone_number,
-      label_color: payerState.label_color,
-      signature_at_pu: payerState.signature_at_pu,
-      signature_at_do: payerState.signature_at_do,
+      id: itemState.id,
+      public_id: itemState.public_id,
+      name: itemState.name,
+      email: itemState.email,
+      additional_email: itemState.additional_email,
+      phone_number: itemState.phone_number,
+      additional_phone_number: itemState.additional_phone_number,
+      label_color: itemState.label_color,
+      signature_at_pu: itemState.signature_at_pu,
+      signature_at_do: itemState.signature_at_do,
     });
   };
 
-  /* Update payer state */
+  /* Update item state */
   useEffect(() => {
-    drawerData && setPayerState(drawerData);
+    drawerData ? setItemState(drawerData) : setItemState(defaultItemData);
   }, [drawerData]);
 
   return (
@@ -200,9 +217,7 @@ export default function Drawer() {
       >
         {/* Sheet Header */}
         <SheetHeader className="flex flex-row items-center justify-between pb-0">
-          <SheetTitle>
-            {payerState.id ? payerState.name : "Add Payer"}
-          </SheetTitle>
+          <SheetTitle>{itemState.id ? itemState.name : "Add Payer"}</SheetTitle>
 
           <SheetClose>
             <Button variant="ghost" className="size-6 p-0" asChild>
@@ -236,10 +251,10 @@ export default function Drawer() {
                   <Label htmlFor="payer_public_id">Payer ID</Label>
                   <Input
                     id="payer_public_id"
-                    defaultValue={payerState.public_id}
+                    defaultValue={itemState.public_id}
                     onChange={(e) =>
-                      setPayerState({
-                        ...payerState,
+                      setItemState({
+                        ...itemState,
                         public_id: e.target.value,
                       })
                     }
@@ -250,9 +265,9 @@ export default function Drawer() {
                   <Label htmlFor="payer_name">Payer Name</Label>
                   <Input
                     id="payer_name"
-                    defaultValue={payerState.name}
+                    defaultValue={itemState.name}
                     onChange={(e) =>
-                      setPayerState({ ...payerState, name: e.target.value })
+                      setItemState({ ...itemState, name: e.target.value })
                     }
                   />
                 </div>
@@ -261,9 +276,9 @@ export default function Drawer() {
                   <Label htmlFor="email">Email</Label>
                   <Input
                     id="email"
-                    defaultValue={payerState.email}
+                    defaultValue={itemState.email}
                     onChange={(e) =>
-                      setPayerState({ ...payerState, email: e.target.value })
+                      setItemState({ ...itemState, email: e.target.value })
                     }
                   />
                 </div>
@@ -272,10 +287,10 @@ export default function Drawer() {
                   <Label htmlFor="additional_email">Additional Email</Label>
                   <Input
                     id="additional_email"
-                    defaultValue={payerState.additional_email}
+                    defaultValue={itemState.additional_email}
                     onChange={(e) =>
-                      setPayerState({
-                        ...payerState,
+                      setItemState({
+                        ...itemState,
                         additional_email: e.target.value,
                       })
                     }
@@ -286,10 +301,10 @@ export default function Drawer() {
                   <Label htmlFor="phone_number">Phone Number</Label>
                   <Input
                     id="phone_number"
-                    defaultValue={payerState.phone_number}
+                    defaultValue={itemState.phone_number}
                     onChange={(e) =>
-                      setPayerState({
-                        ...payerState,
+                      setItemState({
+                        ...itemState,
                         phone_number: e.target.value,
                       })
                     }
@@ -302,10 +317,10 @@ export default function Drawer() {
                   </Label>
                   <Input
                     id="additional_phone_number"
-                    defaultValue={payerState.additional_phone_number}
+                    defaultValue={itemState.additional_phone_number}
                     onChange={(e) =>
-                      setPayerState({
-                        ...payerState,
+                      setItemState({
+                        ...itemState,
                         additional_phone_number: e.target.value,
                       })
                     }
@@ -316,10 +331,10 @@ export default function Drawer() {
                   <Label htmlFor="label_color">Label Color</Label>
 
                   <Select
-                    defaultValue={payerState.label_color ?? "oklch(98.5% 0 0)"}
+                    defaultValue={itemState.label_color ?? "oklch(98.5% 0 0)"}
                     onValueChange={(value) =>
-                      setPayerState({
-                        ...payerState,
+                      setItemState({
+                        ...itemState,
                         label_color: value,
                       })
                     }
@@ -351,10 +366,10 @@ export default function Drawer() {
                   <Label htmlFor="signature_at_pu">Signature at PU</Label>
                   <Switch
                     id="signature_at_pu"
-                    checked={payerState.signature_at_pu}
+                    checked={itemState.signature_at_pu}
                     onCheckedChange={(value) => {
-                      setPayerState({
-                        ...payerState,
+                      setItemState({
+                        ...itemState,
                         signature_at_pu: value,
                       });
                     }}
@@ -365,10 +380,10 @@ export default function Drawer() {
                   <Label htmlFor="signature_at_do">Signature at DO</Label>
                   <Switch
                     id="signature_at_do"
-                    checked={payerState.signature_at_do}
+                    checked={itemState.signature_at_do}
                     onCheckedChange={(value) => {
-                      setPayerState({
-                        ...payerState,
+                      setItemState({
+                        ...itemState,
                         signature_at_do: value,
                       });
                     }}
@@ -384,14 +399,8 @@ export default function Drawer() {
 
         {/* Footer */}
         <SheetFooter>
-          <Button onClick={() => savePayer()}>
-            {request.isPending ? (
-              <Spinner />
-            ) : payerState.id ? (
-              "Update"
-            ) : (
-              "Save"
-            )}
+          <Button onClick={() => saveItem()}>
+            {request.isPending ? <Spinner /> : itemState.id ? "Update" : "Save"}
           </Button>
         </SheetFooter>
       </SheetContent>

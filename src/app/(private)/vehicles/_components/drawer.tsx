@@ -95,7 +95,7 @@ export default function Drawer() {
   const [itemState, setItemState] = useState(defaultItemData);
   const [dialogOpen, setDialogOpen] = useState(false);
 
-  /* API Request */
+  /* API request */
   const request = api.vehicle.saveVehicle.useMutation({
     onSuccess: () => {
       useDrawerStore.setState({
@@ -104,20 +104,27 @@ export default function Drawer() {
         refreshData: !useDrawerStore.getState().refreshData,
       });
 
-      toast.success("Vehicle created successfully", {
-        action: {
-          label: "Undo",
-          onClick: () => console.log("Undo"),
+      toast.success(
+        itemState.id
+          ? "Vehicle updated successfully"
+          : "Vehicle created successfully",
+        {
+          action: {
+            label: "Undo",
+            onClick: () => console.log("Undo"),
+          },
         },
-      });
+      );
     },
 
     onError: () => {
-      toast.error("Error creating vehicle.");
+      toast.error(
+        itemState.id ? "Error updating vehicle." : "Error creating vehicle.",
+      );
     },
   });
 
-  /* Handle Close Sheet */
+  /* Handle close sheet */
   const handleCloseSheet = () => {
     if (request.isPending) return;
 
@@ -133,12 +140,12 @@ export default function Drawer() {
     setDialogOpen(true);
   };
 
-  /* Handle Close Dialog */
+  /* Handle close dialog */
   const handleCloseDialog = () => {
     setDialogOpen(false);
   };
 
-  /* Handle Discard */
+  /* Handle discard */
   const handleDiscard = () => {
     /* If request is pending, do nothing */
     if (request.isPending) return;
@@ -156,8 +163,28 @@ export default function Drawer() {
     setDialogOpen(false);
   };
 
-  /* Save Item */
+  /* Save item */
   const saveItem = () => {
+    /* If request is pending, do nothing */
+    if (request.isPending) return;
+
+    /* If item state is default, do nothing */
+    if (itemState === defaultItemData) return;
+
+    /* If item state is drawer data, do nothing */
+    if (itemState === drawerData) return;
+
+    /* Format dates */
+    const registrationDate =
+      itemState.registration_date instanceof Date
+        ? itemState.registration_date.toISOString().slice(0, 10)
+        : itemState.registration_date;
+    const registrationExpirationDate =
+      itemState.registration_expiration_date instanceof Date
+        ? itemState.registration_expiration_date.toISOString().slice(0, 10)
+        : itemState.registration_expiration_date;
+
+    /* Make request */
     request.mutateAsync({
       id: itemState.id,
       public_id: itemState.public_id,
@@ -167,10 +194,8 @@ export default function Drawer() {
       vin: itemState.vin,
       license_plate: itemState.license_plate,
       color: itemState.color,
-      registration_date: itemState.registration_date.toISOString().slice(0, 10),
-      registration_expiration_date: itemState.registration_expiration_date
-        .toISOString()
-        .slice(0, 10),
+      registration_date: registrationDate,
+      registration_expiration_date: registrationExpirationDate,
       mileage: itemState.mileage,
       level_of_service: itemState.level_of_service,
       base_location: itemState.base_location,
@@ -179,7 +204,7 @@ export default function Drawer() {
 
   /* Update item state */
   useEffect(() => {
-    drawerData && setItemState(drawerData);
+    drawerData ? setItemState(drawerData) : setItemState(defaultItemData);
   }, [drawerData]);
 
   return (
