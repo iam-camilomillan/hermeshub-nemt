@@ -39,6 +39,8 @@ const TableDateFilter = <TData,>({ table }: TableDateFilterProps<TData>) => {
       );
   }, [table, date]);
 
+  console.log(date);
+
   return (
     <Popover>
       <PopoverTrigger asChild>

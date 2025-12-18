@@ -4,6 +4,16 @@
 import { useState } from "react";
 
 /* Shadcn Imports */
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "~/app/_components/ui/dialog";
 import { Input } from "~/app/_components/ui/input";
 import { Button } from "~/app/_components/ui/button";
 import {
@@ -15,6 +25,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "~/app/_components/ui/select";
+import { toast } from "sonner";
 
 /* Icons Imports */
 import { IconPlus, IconX } from "@tabler/icons-react";
@@ -28,6 +39,8 @@ import { useDrawerStore } from "~/store/use-drawer-store";
 
 /* Utils Imports */
 import { tableFilterSettings } from "~/app/(private)/members/utils/table-filter-settings";
+import { api } from "~/trpc/react";
+import Papa from "papaparse";
 
 /* Type Imports */
 import { type Table } from "@tanstack/react-table";
@@ -42,11 +55,60 @@ const TableToolbar = <TData,>({ table }: TableToolbarProps<TData>) => {
   const [searchBy, setSearchBy] = useState(
     tableFilterSettings.searchBy.defaultValue,
   );
+  const [selectedPayer, setSelectedPayer] = useState<
+    "ALIVI" | "MODIVCARE" | "SAFERIDE" | "ACCESS TO CARE"
+  >("ALIVI");
+  const [file, setFile] = useState<File | null>(null);
+
   const isFiltered = table?.getState().columnFilters.length > 0;
+
+  /* TRPC Utils */
+  const utils = api.useUtils();
+
+  /* TRPC Mutation */
+  const importTrips = api.trip.importTrips.useMutation({
+    onSuccess: async (data) => {
+      toast.success(`Imported ${data.count} trips successfully`);
+      setFile(null);
+      await utils.trip.readTrips.invalidate();
+    },
+    onError: (error) => {
+      toast.error(`Error importing trips: ${error.message}`);
+    },
+  });
 
   /* Import items action */
   const handleImportButton = () => {
-    return;
+    if (!file) {
+      toast.error("Please select a file to import");
+      return;
+    }
+
+    if (!selectedPayer) {
+      toast.error("Please select a payer");
+      return;
+    }
+
+    Papa.parse(file, {
+      header: true,
+      skipEmptyLines: true,
+      complete: (results) => {
+        if (results.errors.length > 0) {
+          toast.error("Error parsing CSV file");
+          console.error(results.errors);
+          return;
+        }
+
+        const trips = results.data as Record<string, any>[];
+        importTrips.mutate({
+          trips,
+          payer: selectedPayer,
+        });
+      },
+      error: (error: Error) => {
+        toast.error(`Error parsing CSV file: ${error.message}`);
+      },
+    });
   };
 
   /* Add item action */
@@ -113,10 +175,70 @@ const TableToolbar = <TData,>({ table }: TableToolbarProps<TData>) => {
       )}
 
       {/* Import items button */}
-      <Button size={"sm"} className="ml-auto" onClick={handleImportButton}>
-        <IconPlus />
-        <span>Import Trips</span>
-      </Button>
+      <Dialog>
+        <DialogTrigger asChild>
+          {/* Import items button */}
+          <Button size={"sm"} className="ml-auto">
+            <IconPlus />
+            <span>Import Trips</span>
+          </Button>
+        </DialogTrigger>
+
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Import Trips</DialogTitle>
+            <DialogDescription>Import trips from a CSV file.</DialogDescription>
+          </DialogHeader>
+
+          {/* Select payer and csv input */}
+          <div className="flex flex-col gap-y-4">
+            <div className="flex flex-col space-y-2">
+              <span className="text-sm font-medium">Payer</span>
+              <Select
+                value={selectedPayer}
+                onValueChange={(value: any) => setSelectedPayer(value)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select payer" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="ALIVI">ALIVI</SelectItem>
+                  <SelectItem value="MODIVCARE">MODIVCARE</SelectItem>
+                  <SelectItem value="SAFERIDE">SAFERIDE</SelectItem>
+                  <SelectItem value="ACCESS TO CARE">ACCESS TO CARE</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="flex flex-col space-y-2">
+              <span className="text-sm font-medium">CSV File</span>
+              <Input
+                type="file"
+                accept=".csv"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) {
+                    setFile(file);
+                  }
+                }}
+              />
+            </div>
+          </div>
+
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button variant="outline">Cancel</Button>
+            </DialogClose>
+
+            <Button
+              onClick={handleImportButton}
+              disabled={importTrips.isPending}
+            >
+              {importTrips.isPending ? "Importing..." : "Import"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* Add item button */}
       <Button size={"sm"} onClick={handleAddButton}>

@@ -25,7 +25,7 @@ import { useDrawerStore } from "~/store/use-drawer-store";
 /* Utils Imports */
 import { tableFilterSettings } from "~/app/(private)/payers/utils/table-filter-settings";
 
-/* Types Imports */
+/* Type Imports */
 import { type Table } from "@tanstack/react-table";
 
 /* TableToolbar Props */

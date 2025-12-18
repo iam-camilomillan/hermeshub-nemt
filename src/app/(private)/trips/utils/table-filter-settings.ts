@@ -1,15 +1,12 @@
 export const tableFilterSettings = {
-  defaultColumnsHidden: {
-    status: false,
-    level_of_service: false,
-  },
+  defaultColumnsHidden: {},
   searchBy: {
     placeholder: "Filter trips ...",
     defaultValue: "passenger_name",
     selectItems: [
-      { label: "Trip ID", value: "id" },
+      { label: "Trip ID", value: "public_id" },
       { label: "Name", value: "passenger_name" },
-      { label: "Phone", value: "passenger_phone" },
+      { label: "Phone", value: "passenger_phone_number" },
       { label: "PU Address", value: "pickup_address" },
       { label: "DO Address", value: "dropoff_address" },
     ],
@@ -40,7 +37,7 @@ export const tableFilterSettings = {
 
     {
       title: "Payer",
-      column: "payer",
+      column: "payer_id",
       options: [
         { label: "alivi", value: "ALIVI" },
         { label: "modivcare", value: "MODIVCARE" },

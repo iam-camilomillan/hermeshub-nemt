@@ -76,8 +76,8 @@ export const tableColumns: ColumnDef<any>[] = [
 
   /* Trip ID */
   {
-    id: "id",
-    accessorKey: "id",
+    id: "public_id",
+    accessorKey: "public_id",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Trip ID" />
     ),
@@ -88,21 +88,28 @@ export const tableColumns: ColumnDef<any>[] = [
           <TooltipTrigger>
             {row.original.status.toString() === "Completed" && (
               <Badge className="bg-green-400">
-                <span className="font-bold">&#35;{row.original.id}</span>
+                <span className="font-bold">&#35;{row.original.public_id}</span>
                 <IconCheck />
               </Badge>
             )}
 
             {row.original.status.toString() === "Will Call" && (
               <Badge className="bg-purple-400">
-                <span className="font-bold">&#35;{row.original.id}</span>
+                <span className="font-bold">&#35;{row.original.public_id}</span>
                 <IconPhoneCall />
               </Badge>
             )}
 
             {row.original.status.toString() === "Canceled" && (
               <Badge className="bg-red-400 font-bold">
-                <span className="font-bold">&#35;{row.original.id}</span>
+                <span className="font-bold">&#35;{row.original.public_id}</span>
+                <IconX />
+              </Badge>
+            )}
+
+            {row.original.status.toString() === "unassigned" && (
+              <Badge className="bg-zinc-400 font-bold">
+                <span className="font-bold">&#35;{row.original.public_id}</span>
                 <IconX />
               </Badge>
             )}
@@ -169,10 +176,43 @@ export const tableColumns: ColumnDef<any>[] = [
 
       if (!cellValue) return false;
 
-      const cellDate =
-        cellValue instanceof Date ? cellValue : new Date(cellValue as string);
+      // Helper to parse cell value to Date at midnight
+      const parseCellDate = (val: string | Date): Date | null => {
+        if (val instanceof Date) {
+          val.setHours(0, 0, 0, 0);
+          return val;
+        }
+
+        let date: Date;
+
+        // Try parsing YYYY-MM-DD (ISO)
+        if (val.includes("-")) {
+          // Treat YYYY-MM-DD as local date parts to avoid UTC shift
+          const [y, m, d] = val.split("-").map(Number);
+          date = new Date(y!, m! - 1, d!);
+        }
+        // Try parsing MM/DD/YYYY
+        else if (val.includes("/")) {
+          const [m, d, y] = val.split("/").map(Number);
+          date = new Date(y!, m! - 1, d!);
+        } else {
+          // Fallback
+          date = new Date(val);
+        }
+
+        if (isNaN(date.getTime())) return null;
+        date.setHours(0, 0, 0, 0);
+        return date;
+      };
+
+      const cellDate = parseCellDate(cellValue as string | Date);
+      if (!cellDate) return false;
 
       const [start, end] = value ?? [null, null];
+
+      // Normalize range dates to midnight
+      if (start) start.setHours(0, 0, 0, 0);
+      if (end) end.setHours(0, 0, 0, 0);
 
       if (start && end) return cellDate >= start && cellDate <= end;
       if (start) return cellDate >= start;
@@ -184,8 +224,8 @@ export const tableColumns: ColumnDef<any>[] = [
 
   /* PU Time */
   {
-    id: "pickup_time",
-    accessorKey: "pickup_time",
+    id: "scheduled_pickup_time",
+    accessorKey: "scheduled_pickup_time",
     meta: {
       label: "PU Time",
     },
@@ -207,8 +247,8 @@ export const tableColumns: ColumnDef<any>[] = [
 
   /* DO Time */
   {
-    id: "dropoff_time",
-    accessorKey: "dropoff_time",
+    id: "scheduled_dropoff_time",
+    accessorKey: "scheduled_dropoff_time",
     meta: {
       label: "DO Time",
     },
@@ -231,7 +271,8 @@ export const tableColumns: ColumnDef<any>[] = [
   /* Member´s Name */
   {
     id: "passenger_name",
-    accessorKey: "passenger_name",
+    accessorFn: (row) =>
+      `${row.passenger_first_name} ${row.passenger_last_name}`,
     meta: {
       label: "Name",
     },
@@ -241,43 +282,64 @@ export const tableColumns: ColumnDef<any>[] = [
 
     cell: ({ row }) => {
       return (
-        <div className="flex items-center">
-          <CopyableItem
-            label={row.original.passenger_phone.toString()}
-            value={row.original.passenger_phone.toString()}
-          >
-            <IconPhone className="text-muted-foreground size-4" />
-          </CopyableItem>
+        <div className="flex items-center gap-x-2">
+          <span className="truncate font-medium">
+            {row.original.passenger_first_name}{" "}
+            {row.original.passenger_last_name}
+          </span>
+          <div className="flex items-center">
+            <CopyableItem
+              label={row.original.passenger_phone_number?.toString() ?? ""}
+              value={row.original.passenger_phone_number?.toString() ?? ""}
+            >
+              <IconPhone className="text-muted-foreground size-4" />
+            </CopyableItem>
 
-          <Tooltip>
-            <TooltipTrigger>
-              {row.original.level_of_service.toString() === "Wheelchair" && (
-                <IconDisabled className="text-muted-foreground size-4" />
-              )}
-              {row.original.level_of_service.toString() === "Stretcher" && (
-                <IconBedFlat className="text-muted-foreground size-4" />
-              )}
+            <Tooltip>
+              <TooltipTrigger>
+                {row.original.level_of_service.toString() === "Wheelchair" && (
+                  <IconDisabled className="text-muted-foreground size-4" />
+                )}
+                {row.original.level_of_service.toString() === "Stretcher" && (
+                  <IconBedFlat className="text-muted-foreground size-4" />
+                )}
 
-              {row.original.level_of_service.toString() === "Ambulatory" && (
-                <IconWalk className="text-muted-foreground size-4" />
-              )}
+                {row.original.level_of_service.toString() === "Ambulatory" && (
+                  <IconWalk className="text-muted-foreground size-4" />
+                )}
 
-              {row.original.level_of_service.toString() === "Curb 2 Curb" && (
-                <IconWalk className="text-muted-foreground size-4" />
-              )}
+                {row.original.level_of_service.toString() === "Curb 2 Curb" && (
+                  <IconWalk className="text-muted-foreground size-4" />
+                )}
 
-              {row.original.level_of_service.toString() === "Door 2 Door" && (
-                <IconOld className="text-muted-foreground size-4" />
-              )}
-            </TooltipTrigger>
+                {row.original.level_of_service.toString() === "Door 2 Door" && (
+                  <IconOld className="text-muted-foreground size-4" />
+                )}
+              </TooltipTrigger>
 
-            <TooltipContent>
-              <span>{row.original.level_of_service}</span>
-            </TooltipContent>
-          </Tooltip>
+              <TooltipContent>
+                <span>{row.original.level_of_service}</span>
+              </TooltipContent>
+            </Tooltip>
+          </div>
         </div>
       );
     },
+  },
+
+  /* Member Phone Number */
+  {
+    id: "passenger_phone_number",
+    accessorKey: "passenger_phone_number",
+    header: "Phone",
+    cell: ({ row }) => (
+      <CopyableItem
+        label={row.original.passenger_phone_number?.toString() ?? ""}
+        value={row.original.passenger_phone_number?.toString() ?? ""}
+      >
+        <span>{row.original.passenger_phone_number}</span>
+      </CopyableItem>
+    ),
   },
 
   /* Member´s Pickup Address */
@@ -302,10 +364,10 @@ export const tableColumns: ColumnDef<any>[] = [
           </CopyableItem>
 
           {/* Facility */}
-          {row.original.pickup_location_type ? (
+          {row.original.pickup_location_name ? (
             <>
               <span className="text-muted-foreground">
-                {row.original.pickup_location_type}
+                {row.original.pickup_location_name}
               </span>
             </>
           ) : null}
@@ -341,10 +403,10 @@ export const tableColumns: ColumnDef<any>[] = [
           </CopyableItem>
 
           {/* Facility */}
-          {row.original.dropoff_location_type ? (
+          {row.original.dropoff_location_name ? (
             <>
               <span className="text-muted-foreground">
-                {row.original.dropoff_location_type}
+                {row.original.dropoff_location_name}
               </span>
             </>
           ) : null}
@@ -360,13 +422,13 @@ export const tableColumns: ColumnDef<any>[] = [
 
   /* Miles */
   {
-    id: "miles",
-    accessorKey: "miles",
+    id: "mileage",
+    accessorKey: "mileage",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Miles" />
     ),
 
-    cell: ({ row }) => <span>{row.original.miles.toString()} </span>,
+    cell: ({ row }) => <span>{row.original.mileage?.toString()} </span>,
   },
 
   /* LOS */
@@ -404,26 +466,26 @@ export const tableColumns: ColumnDef<any>[] = [
 
   /* Payer */
   {
-    id: "payer",
-    accessorKey: "payer",
+    id: "payer_id",
+    accessorKey: "payer_id",
     header: "Payer",
     cell: ({ row }) => {
       return (
         <div>
-          {row.original.payer === "ALIVI" && (
-            <Badge className="bg-yellow-300">{row.original.payer}</Badge>
+          {row.original.payer_id === "ALIVI" && (
+            <Badge className="bg-yellow-300">{row.original.payer_id}</Badge>
           )}
 
-          {row.original.payer === "MODIVCARE" && (
-            <Badge className="bg-blue-300">{row.original.payer}</Badge>
+          {row.original.payer_id === "MODIVCARE" && (
+            <Badge className="bg-blue-300">{row.original.payer_id}</Badge>
           )}
 
-          {row.original.payer === "SAFERIDE" && (
-            <Badge className="bg-green-300">{row.original.payer}</Badge>
+          {row.original.payer_id === "SAFERIDE" && (
+            <Badge className="bg-green-300">{row.original.payer_id}</Badge>
           )}
 
-          {row.original.payer === "A2C" && (
-            <Badge className="bg-orange-300">{row.original.payer}</Badge>
+          {row.original.payer_id === "ACCESS TO CARE" && (
+            <Badge className="bg-orange-300">{row.original.payer_id}</Badge>
           )}
         </div>
       );

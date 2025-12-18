@@ -14,7 +14,7 @@ import { httpBatchStreamLink, loggerLink } from "@trpc/client";
 import { createQueryClient } from "~/trpc/query-client";
 import SuperJSON from "superjson";
 
-/* Types Imports */
+/* Type Imports */
 import { type inferRouterInputs, type inferRouterOutputs } from "@trpc/server";
 import { type AppRouter } from "~/server/api/root";
 

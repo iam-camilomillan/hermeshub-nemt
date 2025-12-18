@@ -17,15 +17,33 @@ export const trip = pgTable("trips", {
   id: text("id").primaryKey(),
   public_id: text("public_id").notNull().unique(),
   status: text("status").notNull().default("unassigned"),
+
+  payer_trip_id: text("payer_trip_id").notNull(),
   date: date("date").notNull(),
   scheduled_pickup_time: time("scheduled_pickup_time"),
   actual_pickup_time: time("actual_pickup_time"),
   scheduled_dropoff_time: time("scheduled_dropoff_time"),
   actual_dropoff_time: time("actual_dropoff_time"),
+
   pickup_address: text("pickup_address").notNull(),
-  pickup_location_type: text("pickup_location_type").notNull(),
+  pickup_location_name: text("pickup_location_name").notNull(),
+  pickup_phone_number: text("pickup_phone_number").notNull(),
   dropoff_address: text("dropoff_address").notNull(),
-  dropoff_location_type: text("dropoff_location_type").notNull(),
+  dropoff_location_name: text("dropoff_location_name").notNull(),
+  dropoff_phone_number: text("dropoff_phone_number").notNull(),
+
+  payer_passenger_id: text("payer_passenger_id").notNull(),
+  passenger_first_name: text("passenger_first_name").notNull(),
+  passenger_last_name: text("passenger_last_name").notNull(),
+  passenger_phone_number: text("passenger_phone_number").notNull(),
+  passenger_date_of_birth: date("passenger_date_of_birth"),
+
+  level_of_service: text("level_of_service").notNull(),
+  mileage: text("mileage").notNull(),
+
+  notes: text("notes"),
+
+  payer_id: text("payer_id").notNull(),
 
   createdAt: timestamp("created_at").notNull(),
   updatedAt: timestamp("updated_at").notNull(),

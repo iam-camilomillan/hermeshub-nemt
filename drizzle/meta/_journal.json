@@ -71,6 +71,13 @@
       "when": 1765596386004,
       "tag": "0009_charming_moon_knight",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1766092063647,
+      "tag": "0010_icy_omega_sentinel",
+      "breakpoints": true
     }
   ]
 }

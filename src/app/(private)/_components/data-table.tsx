@@ -26,7 +26,7 @@ import {
 } from "~/app/_components/ui/table";
 import { Spinner } from "~/app/_components/ui/spinner";
 
-/* Types Imports */
+/* Type Imports */
 import type {
   ColumnDef,
   SortingState,

@@ -4,7 +4,7 @@ import { Button } from "~/app/_components/ui/button";
 /* Icons imports */
 import { IconArrowDown, IconArrowUp, IconSelector } from "@tabler/icons-react";
 
-/* Types imports */
+/* Type imports */
 import { type Column } from "@tanstack/react-table";
 
 /* TableColumnHeader Props */

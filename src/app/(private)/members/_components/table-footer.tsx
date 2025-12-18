@@ -1,6 +1,6 @@
 "use client";
 
-/* Types Imports */
+/* Type Imports */
 import { type Table } from "@tanstack/react-table";
 
 /* TableFooter Props */
