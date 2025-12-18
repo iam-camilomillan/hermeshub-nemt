@@ -1,11 +1,13 @@
-export default function Dispatching() {
+const Dispatching = () => {
   return (
     <main className="flex items-center justify-center">
       <section>
-        <div className="">
+        <div>
           <span>A very beautiful dispatching page.</span>
         </div>
       </section>
     </main>
   );
-}
+};
+
+export default Dispatching;

@@ -4,26 +4,26 @@
 import { useEffect } from "react";
 
 /* Components Imports */
-import DataTable from "~/app/(private)/_components/data_table";
-import TableToolbar from "~/app/(private)/payers/_components/table_toolbar";
-import TableFooter from "~/app/(private)/payers/_components/table_footer";
-import { tableColumns } from "~/app/(private)/payers/_components/table_columns";
+import DataTable from "~/app/(private)/_components/data-table";
+import TableToolbar from "~/app/(private)/payers/_components/table-toolbar";
+import TableFooter from "~/app/(private)/payers/_components/table-footer";
+import { tableColumns } from "~/app/(private)/payers/_components/table-columns";
 import Drawer from "~/app/(private)/payers/_components/drawer";
 
 /* Store Imports */
-import { useDrawerStore } from "~/store/useTableStore";
+import { useDrawerStore } from "~/store/use-drawer-store";
 
 /* API Imports */
 import { api } from "~/trpc/react";
 
-export default function Payers() {
-  /* Global States */
+const Payers = () => {
+  /* Global states */
   const refreshData = useDrawerStore((state) => state.refreshData);
 
-  /* API Request */
+  /* API request */
   const { data, isFetching, refetch } = api.payer.readPayers.useQuery();
 
-  /* Data Refresh */
+  /* Data refresh */
   useEffect(() => {
     if (refreshData) {
       refetch();
@@ -44,4 +44,6 @@ export default function Payers() {
       <Drawer />
     </main>
   );
-}
+};
+
+export default Payers;

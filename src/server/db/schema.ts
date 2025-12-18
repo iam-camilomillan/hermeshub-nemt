@@ -4,6 +4,7 @@ import {
   boolean,
   timestamp,
   date,
+  time,
   pgTable,
   pgTableCreator,
 } from "drizzle-orm/pg-core";
@@ -11,8 +12,52 @@ import {
 /* Table Creator */
 export const createTable = pgTableCreator((name) => `pg-drizzle_${name}`);
 
+/* Trips Schema */
+export const trip = pgTable("trips", {
+  id: text("id").primaryKey(),
+  public_id: text("public_id").notNull().unique(),
+  status: text("status").notNull().default("unassigned"),
+  date: date("date").notNull(),
+  scheduled_pickup_time: time("scheduled_pickup_time"),
+  actual_pickup_time: time("actual_pickup_time"),
+  scheduled_dropoff_time: time("scheduled_dropoff_time"),
+  actual_dropoff_time: time("actual_dropoff_time"),
+  pickup_address: text("pickup_address").notNull(),
+  pickup_location_type: text("pickup_location_type").notNull(),
+  dropoff_address: text("dropoff_address").notNull(),
+  dropoff_location_type: text("dropoff_location_type").notNull(),
+
+  createdAt: timestamp("created_at").notNull(),
+  updatedAt: timestamp("updated_at").notNull(),
+
+  companyId: text("company_id")
+    .notNull()
+    .references(() => company.id),
+});
+
+/* Members Schema */
+export const member = pgTable("members", {
+  id: text("id").primaryKey(),
+  public_id: text("public_id").notNull().unique(),
+  first_name: text("first_name").notNull(),
+  last_name: text("last_name").notNull(),
+  phone_number: text("phone_number").notNull(),
+  additional_phone_number: text("additional_phone_number"),
+  address: text("address"),
+  address_location_type: text("address_location_type"),
+  additional_address: text("additional_address"),
+  additional_address_location_type: text("additional_address_location_type"),
+
+  createdAt: timestamp("created_at").notNull(),
+  updatedAt: timestamp("updated_at").notNull(),
+
+  companyId: text("company_id")
+    .notNull()
+    .references(() => company.id),
+});
+
 /* Vehicles Schema */
-export const vehicle = pgTable("vehicle", {
+export const vehicle = pgTable("vehicles", {
   id: text("id").primaryKey(),
   public_id: text("public_id").notNull().unique(),
   status: text("status").notNull().default("active"),
@@ -38,8 +83,8 @@ export const vehicle = pgTable("vehicle", {
     .references(() => company.id),
 });
 
-/* Payer Schema */
-export const payer = pgTable("payer", {
+/* Payers Schema */
+export const payer = pgTable("payers", {
   id: text("id").primaryKey(),
   public_id: text("public_id").notNull().unique(),
   name: text("name").notNull(),
@@ -59,8 +104,8 @@ export const payer = pgTable("payer", {
     .references(() => company.id),
 });
 
-/* Company Schema */
-export const company = pgTable("company", {
+/* Companies Schema */
+export const company = pgTable("companies", {
   id: text("id").primaryKey(),
   public_id: text("public_id").notNull().unique(),
   name: text("name").notNull(),
@@ -69,8 +114,8 @@ export const company = pgTable("company", {
   updatedAt: timestamp("updated_at").notNull(),
 });
 
-/* BETTERAUTH SCHEMAS */
-export const user = pgTable("user", {
+/* BetterAuth Schemas */
+export const user = pgTable("users", {
   id: text("id").primaryKey(),
   first_name: text("first_name").notNull(),
   last_name: text("last_name").notNull(),
@@ -96,7 +141,7 @@ export const user = pgTable("user", {
     .notNull(),
 });
 
-export const session = pgTable("session", {
+export const session = pgTable("sessions", {
   id: text("id").primaryKey(),
   token: text("token").notNull().unique(),
   expiresAt: timestamp("expires_at").notNull(),
@@ -111,7 +156,7 @@ export const session = pgTable("session", {
     .references(() => user.id, { onDelete: "cascade" }),
 });
 
-export const account = pgTable("account", {
+export const account = pgTable("accounts", {
   id: text("id").primaryKey(),
   accountId: text("account_id").notNull(),
   providerId: text("provider_id").notNull(),
@@ -131,7 +176,7 @@ export const account = pgTable("account", {
     .references(() => user.id, { onDelete: "cascade" }),
 });
 
-export const verification = pgTable("verification", {
+export const verification = pgTable("verifications", {
   id: text("id").primaryKey(),
   identifier: text("identifier").notNull(),
   value: text("value").notNull(),

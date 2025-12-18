@@ -9,15 +9,14 @@ import {
 } from "~/app/_components/ui/tooltip";
 import { Button } from "~/app/_components/ui/button";
 
-export default function CopyableItem({
-  children,
-  label,
-  value,
-}: {
+/* CopyableItem Props */
+interface CopyableItemProps {
   children: React.ReactNode;
   label?: string;
   value: string;
-}) {
+}
+
+const CopyableItem = ({ children, label, value }: CopyableItemProps) => {
   const [open, setOpen] = useState(false);
   const [copied, setCopied] = useState(false);
 
@@ -54,4 +53,6 @@ export default function CopyableItem({
       </TooltipContent>
     </Tooltip>
   );
-}
+};
+
+export default CopyableItem;

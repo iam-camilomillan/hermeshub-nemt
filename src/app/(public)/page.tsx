@@ -1,4 +1,4 @@
-export default function Home() {
+const Home = () => {
   return (
     <main className="flex min-h-screen items-center justify-center">
       <section>
@@ -8,4 +8,6 @@ export default function Home() {
       </section>
     </main>
   );
-}
+};
+
+export default Home;

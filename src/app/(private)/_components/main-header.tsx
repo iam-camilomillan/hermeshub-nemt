@@ -11,7 +11,7 @@ import { Button } from "~/app/_components/ui/button";
 /* Icons Imports */
 import { IconBell } from "@tabler/icons-react";
 
-export default function MainHeader() {
+const MainHeader = () => {
   /* Title */
   const pathname = usePathname();
   const page = pathname.split("/").pop();
@@ -19,7 +19,7 @@ export default function MainHeader() {
   return (
     <header className="border-b px-2 py-1">
       <div className="flex items-center">
-        <SidebarTrigger className="" />
+        <SidebarTrigger />
 
         <Separator
           orientation="vertical"
@@ -36,4 +36,6 @@ export default function MainHeader() {
       </div>
     </header>
   );
-}
+};
+
+export default MainHeader;

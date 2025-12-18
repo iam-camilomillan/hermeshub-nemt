@@ -53,7 +53,7 @@ import { toast } from "sonner";
 import { IconCalendarEvent, IconX } from "@tabler/icons-react";
 
 /* Store Imports */
-import { useDrawerStore } from "~/store/useTableStore";
+import { useDrawerStore } from "~/store/use-drawer-store";
 
 /* Utils Imports */
 import { format } from "date-fns";
@@ -86,7 +86,7 @@ const losOptions = [
   { value: "stretcher", label: "Stretcher" },
 ];
 
-export default function Drawer() {
+const Drawer = () => {
   /* Global states */
   const isDrawerOpen = useDrawerStore((state) => state.isDrawerOpen);
   const drawerData = useDrawerStore((state) => state.drawerData);
@@ -487,4 +487,6 @@ export default function Drawer() {
       </SheetContent>
     </Sheet>
   );
-}
+};
+
+export default Drawer;

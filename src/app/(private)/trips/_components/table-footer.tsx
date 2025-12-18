@@ -1,7 +1,4 @@
-/* Table imports */
-import { type Table } from "@tanstack/react-table";
-
-/* Shadcn imports */
+/* Shadcn Imports */
 import { Label } from "~/app/_components/ui/label";
 import {
   Select,
@@ -12,7 +9,7 @@ import {
 } from "~/app/_components/ui/select";
 import { Button } from "~/app/_components/ui/button";
 
-/* Icons imports */
+/* Icons Imports */
 import {
   IconChevronLeft,
   IconChevronRight,
@@ -20,16 +17,17 @@ import {
   IconChevronsRight,
 } from "@tabler/icons-react";
 
-/* Type definitios */
-interface DataTablePaginationProps<TData> {
+/* Type Imports */
+import { type Table } from "@tanstack/react-table";
+
+/* TableFooter Props */
+interface TableFooterProps<TData> {
   table: Table<TData>;
 }
 
-export default function DataTablePagination<TData>({
-  table,
-}: DataTablePaginationProps<TData>) {
+const TableFooter = <TData,>({ table }: TableFooterProps<TData>) => {
   return (
-    <div className="flex items-center justify-between px-4">
+    <div className="flex items-center justify-between px-2">
       {/* Left side */}
       <div className="text-muted-foreground text-sm">
         {table.getFilteredSelectedRowModel().rows.length} of{" "}
@@ -37,9 +35,9 @@ export default function DataTablePagination<TData>({
       </div>
 
       {/* Right side */}
-      <div className="flex gap-6">
+      <div className="flex gap-4">
         {/* Rows per page */}
-        <div className="flex gap-2">
+        <div className="flex gap-1">
           <Label htmlFor="rows-per-page" className="text-sm font-medium">
             Rows per page
           </Label>
@@ -71,7 +69,7 @@ export default function DataTablePagination<TData>({
         </div>
 
         {/* Pagination controls */}
-        <div className="flex gap-x-2">
+        <div className="flex gap-x-1">
           <Button
             variant="outline"
             className="size-8"
@@ -114,4 +112,6 @@ export default function DataTablePagination<TData>({
       </div>
     </div>
   );
-}
+};
+
+export default TableFooter;

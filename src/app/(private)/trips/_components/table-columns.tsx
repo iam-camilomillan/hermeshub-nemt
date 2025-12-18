@@ -1,9 +1,6 @@
 "use client";
 
-/* Table imports */
-import { type ColumnDef } from "@tanstack/react-table";
-
-/* Shadcn imports */
+/* Shadcn Imports */
 import { Checkbox } from "~/app/_components/ui/checkbox";
 import { Badge } from "~/app/_components/ui/badge";
 import {
@@ -20,7 +17,7 @@ import {
 } from "~/app/_components/ui/dropdown-menu";
 import { Button } from "~/app/_components/ui/button";
 
-/* Icons imports */
+/* Icons Imports */
 import {
   IconBedFlat,
   IconBrandGoogleMaps,
@@ -34,19 +31,18 @@ import {
   IconX,
 } from "@tabler/icons-react";
 
-/* Component imports */
-import DataTableColumnHeader from "~/app/(private)/_components/data_table_column_header";
-import TripDrawer from "~/app/(private)/_components/trip_drawer";
-import CopyableItem from "~/app/(private)/_components/copyable_item";
+/* Component Imports */
+import DataTableColumnHeader from "~/app/(private)/_components/table-column-header";
+import TableColumnFilter from "~/app/(private)/trips/_components/table-column-filter";
+import CopyableItem from "~/app/(private)/_components/copyable-item";
 
-/* Schema imports */
+/* Type Imports */
+import { type ColumnDef } from "@tanstack/react-table";
 
-/* Utils imports */
-import DataTableColumnFilter from "~/app/(private)/_components/data_table_column_filter";
-
+/* Type Definitions */
 type DateRange = [Date | null, Date | null] | undefined;
 
-export const columns: ColumnDef<any>[] = [
+export const tableColumns: ColumnDef<any>[] = [
   /* Select checkbox */
   {
     id: "select",
@@ -246,13 +242,12 @@ export const columns: ColumnDef<any>[] = [
     cell: ({ row }) => {
       return (
         <div className="flex items-center">
-          <TripDrawer item={row.original} />
-
           <CopyableItem
-            child={<IconPhone className="text-muted-foreground size-4" />}
             label={row.original.passenger_phone.toString()}
             value={row.original.passenger_phone.toString()}
-          />
+          >
+            <IconPhone className="text-muted-foreground size-4" />
+          </CopyableItem>
 
           <Tooltip>
             <TooltipTrigger>
@@ -302,10 +297,9 @@ export const columns: ColumnDef<any>[] = [
       return (
         <div>
           {/* Address */}
-          <CopyableItem
-            child={row.original.pickup_address}
-            value={row.original.pickup_address}
-          />
+          <CopyableItem value={row.original.pickup_address}>
+            {row.original.pickup_address}
+          </CopyableItem>
 
           {/* Facility */}
           {row.original.pickup_location_type ? (
@@ -317,7 +311,9 @@ export const columns: ColumnDef<any>[] = [
           ) : null}
 
           {/* Google maps link */}
-          <CopyableItem child={<IconBrandGoogleMaps />} value={addressLink} />
+          <CopyableItem value={addressLink}>
+            <IconBrandGoogleMaps />
+          </CopyableItem>
         </div>
       );
     },
@@ -340,10 +336,9 @@ export const columns: ColumnDef<any>[] = [
       return (
         <div>
           {/* Address */}
-          <CopyableItem
-            child={row.original.dropoff_address}
-            value={addressLink}
-          />
+          <CopyableItem value={row.original.dropoff_address}>
+            {row.original.dropoff_address}
+          </CopyableItem>
 
           {/* Facility */}
           {row.original.dropoff_location_type ? (
@@ -355,7 +350,9 @@ export const columns: ColumnDef<any>[] = [
           ) : null}
 
           {/* Google maps link */}
-          <CopyableItem child={<IconBrandGoogleMaps />} value={addressLink} />
+          <CopyableItem value={addressLink}>
+            <IconBrandGoogleMaps />
+          </CopyableItem>
         </div>
       );
     },
@@ -443,8 +440,9 @@ export const columns: ColumnDef<any>[] = [
   {
     id: "actions",
     header: ({ table }) => {
-      return <DataTableColumnFilter table={table} />;
+      return <TableColumnFilter table={table} />;
     },
+
     cell: () => (
       <DropdownMenu>
         <DropdownMenuTrigger asChild>

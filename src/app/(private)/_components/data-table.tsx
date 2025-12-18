@@ -14,14 +14,6 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import type {
-  ColumnDef,
-  SortingState,
-  ColumnFiltersState,
-  VisibilityState,
-  RowSelectionState,
-  PaginationState,
-} from "@tanstack/react-table";
 
 /* Shadcn Imports */
 import {
@@ -34,23 +26,33 @@ import {
 } from "~/app/_components/ui/table";
 import { Spinner } from "~/app/_components/ui/spinner";
 
-/* Interface Definitions */
+/* Types Imports */
+import type {
+  ColumnDef,
+  SortingState,
+  ColumnFiltersState,
+  VisibilityState,
+  RowSelectionState,
+  PaginationState,
+} from "@tanstack/react-table";
+
+/* DataTable Props */
 interface DataTableProps<TData, TValue> {
   data: TData[];
-  isLoading: boolean;
   TableToolbar: React.ElementType;
   TableFooter: React.ElementType;
   tableColumns: ColumnDef<TData, TValue>[];
+  isLoading: boolean;
 }
 
-export default function DataTable<TData, TValue>({
+const DataTable = <TData, TValue>({
   data,
-  isLoading,
   TableToolbar,
   TableFooter,
   tableColumns,
-}: DataTableProps<TData, TValue>) {
-  /* Local States */
+  isLoading,
+}: DataTableProps<TData, TValue>) => {
+  /* Local states */
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -98,7 +100,7 @@ export default function DataTable<TData, TValue>({
             isLoading || !table.getRowModel().rows?.length ? "h-full" : ""
           }
         >
-          {/* Table Header */}
+          {/* Table header */}
           <TableHeader className="bg-muted sticky top-0">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
@@ -116,7 +118,7 @@ export default function DataTable<TData, TValue>({
             ))}
           </TableHeader>
 
-          {/* Table Body */}
+          {/* Table body */}
           <TableBody
             className={
               isLoading || !table.getRowModel().rows?.length ? "h-full" : ""
@@ -163,4 +165,6 @@ export default function DataTable<TData, TValue>({
       <TableFooter table={table} />
     </section>
   );
-}
+};
+
+export default DataTable;

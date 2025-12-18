@@ -3,9 +3,6 @@
 /* React imports */
 import { useState } from "react";
 
-/* Table imports */
-import { type Table } from "@tanstack/react-table";
-
 /* Shadcn imports */
 import { Input } from "~/app/_components/ui/input";
 import { Button } from "~/app/_components/ui/button";
@@ -23,26 +20,27 @@ import {
 import { IconPlus, IconX } from "@tabler/icons-react";
 
 /* Store imports */
-import { useDrawerStore } from "~/store/useTableStore";
+import { useDrawerStore } from "~/store/use-drawer-store";
 
 /* Utils Imports */
-import { tableFilterSettings } from "~/app/(private)/vehicles/utils/table_filter_settings";
+import { tableFilterSettings } from "~/app/(private)/vehicles/utils/table-filter-settings";
 
-/* Interface Definitions */
+/* Type Imports */
+import { type Table } from "@tanstack/react-table";
+
+/* TableToolbar Props */
 interface TableToolbarProps<TData> {
   table: Table<TData>;
 }
 
-export default function TableToolbar<TData>({
-  table,
-}: TableToolbarProps<TData>) {
+const TableToolbar = <TData,>({ table }: TableToolbarProps<TData>) => {
   /* Local states */
   const [searchBy, setSearchBy] = useState(
     tableFilterSettings.searchBy.defaultValue,
   );
   const isFiltered = table?.getState().columnFilters.length > 0;
 
-  /* Add Item Action */
+  /* Add item action */
   const handleAddButton = () => {
     useDrawerStore.setState({ isDrawerOpen: true });
   };
@@ -98,4 +96,6 @@ export default function TableToolbar<TData>({
       </Button>
     </div>
   );
-}
+};
+
+export default TableToolbar;

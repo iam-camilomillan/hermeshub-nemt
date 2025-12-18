@@ -13,7 +13,7 @@ import { Button } from "~/app/_components/ui/button";
 /* Icons imports */
 import { IconChartArcs } from "@tabler/icons-react";
 
-export default async function Navbar() {
+const Navbar = () => {
   return (
     <header className="absolute top-0 flex w-full items-center px-4 py-2">
       {/* Logo */}
@@ -55,4 +55,6 @@ export default async function Navbar() {
       </div>
     </header>
   );
-}
+};
+
+export default Navbar;

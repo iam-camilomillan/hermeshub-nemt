@@ -3,16 +3,16 @@
 /* Next Imports */
 import { useRouter } from "next/navigation";
 
-/* Auth Imports */
-import { authClient } from "~/server/better-auth/client";
-
 /* Shadcn Imports */
 import { Button } from "~/app/_components/ui/button";
 
 /* Icons Imports */
 import { IconLogout } from "@tabler/icons-react";
 
-export default function LogoutButton() {
+/* Auth Imports */
+import { authClient } from "~/server/better-auth/client";
+
+const LogoutButton = () => {
   const router = useRouter();
 
   const signout = async () =>
@@ -21,6 +21,7 @@ export default function LogoutButton() {
         onSuccess: () => router.push("/login"),
       },
     });
+
   return (
     <Button
       variant="ghost"
@@ -31,4 +32,6 @@ export default function LogoutButton() {
       Log out
     </Button>
   );
-}
+};
+
+export default LogoutButton;

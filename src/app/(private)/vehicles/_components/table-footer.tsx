@@ -1,6 +1,3 @@
-/* Table Imports */
-import { type Table } from "@tanstack/react-table";
-
 /* Shadcn Imports */
 import { Button } from "~/app/_components/ui/button";
 
@@ -12,12 +9,15 @@ import {
   IconChevronsRight,
 } from "@tabler/icons-react";
 
-/* Interface Definitions */
+/* Type Imports */
+import { type Table } from "@tanstack/react-table";
+
+/* TableFooter Props */
 interface TableFooterProps<TData> {
   table: Table<TData>;
 }
 
-export default function TableFooter<TData>({ table }: TableFooterProps<TData>) {
+const TableFooter = <TData,>({ table }: TableFooterProps<TData>) => {
   return (
     <div className="flex items-center justify-end px-4">
       {/* Right side */}
@@ -69,4 +69,6 @@ export default function TableFooter<TData>({ table }: TableFooterProps<TData>) {
       </div>
     </div>
   );
-}
+};
+
+export default TableFooter;

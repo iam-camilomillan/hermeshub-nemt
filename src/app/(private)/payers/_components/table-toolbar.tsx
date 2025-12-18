@@ -3,9 +3,6 @@
 /* React imports */
 import { useState } from "react";
 
-/* Table imports */
-import { type Table } from "@tanstack/react-table";
-
 /* Shadcn imports */
 import { Input } from "~/app/_components/ui/input";
 import { Button } from "~/app/_components/ui/button";
@@ -22,27 +19,31 @@ import {
 /* Icons imports */
 import { IconPlus, IconX } from "@tabler/icons-react";
 
-/* Components imports */
-import DataTableRowFilter from "~/app/(private)/_components/data_table_row_filter";
+/* Store imports */
+import { useDrawerStore } from "~/store/use-drawer-store";
 
-/* Types imports */
+/* Utils Imports */
+import { tableFilterSettings } from "~/app/(private)/payers/utils/table-filter-settings";
 
-import DataTableDateFilter from "./data_table_date_filter";
+/* Types Imports */
+import { type Table } from "@tanstack/react-table";
 
-/* Types definitios */
-interface DataTableToolbarProps<TData> {
+/* TableToolbar Props */
+interface TableToolbarProps<TData> {
   table: Table<TData>;
-  filterSettings: any;
 }
 
-export default function DataTableToolbar<TData>({
-  table,
-  filterSettings,
-}: DataTableToolbarProps<TData>) {
+const TableToolbar = <TData,>({ table }: TableToolbarProps<TData>) => {
+  /* Local states */
   const [searchBy, setSearchBy] = useState(
-    filterSettings.searchBy.defaultValue,
+    tableFilterSettings.searchBy.defaultValue,
   );
-  const isFiltered = table.getState().columnFilters.length > 0;
+  const isFiltered = table?.getState().columnFilters.length > 0;
+
+  /* Add item action */
+  const handleAddButton = () => {
+    useDrawerStore.setState({ isDrawerOpen: true });
+  };
 
   return (
     <div className="flex items-center gap-x-2">
@@ -60,7 +61,7 @@ export default function DataTableToolbar<TData>({
           <SelectContent>
             <SelectGroup>
               <SelectLabel>Search by</SelectLabel>
-              {filterSettings.searchBy.selectItems.map((item) => (
+              {tableFilterSettings?.searchBy?.selectItems.map((item) => (
                 <SelectItem key={item.value} value={item.value}>
                   {item.label}
                 </SelectItem>
@@ -71,48 +72,30 @@ export default function DataTableToolbar<TData>({
 
         {/* Input */}
         <Input
-          placeholder={filterSettings.searchBy.placeholder}
-          value={(table.getColumn(searchBy)?.getFilterValue() as string) ?? ""}
+          placeholder={tableFilterSettings?.searchBy?.placeholder}
+          value={(table?.getColumn(searchBy)?.getFilterValue() as string) ?? ""}
           onChange={(event) =>
-            table.getColumn(searchBy)?.setFilterValue(event.target.value)
+            table?.getColumn(searchBy)?.setFilterValue(event.target.value)
           }
           className="rounded-l-none"
         />
       </div>
 
-      {filterSettings.dateFilter ? <DataTableDateFilter table={table} /> : null}
-
-      <div className="flex gap-x-1">
-        {filterSettings.rowFilter.map(
-          (items) =>
-            table.getColumn(items.column) && (
-              <DataTableRowFilter
-                key={items.column}
-                column={table.getColumn(items.column)}
-                title={items.title}
-                options={items.options}
-              />
-            ),
-        )}
-      </div>
-
       {/* Reset filter if there is selection */}
       {isFiltered && (
-        <Button
-          variant="ghost"
-          onClick={() => table.resetColumnFilters()}
-          className="h-8 px-2 lg:px-3"
-        >
+        <Button variant="ghost" onClick={() => table?.resetColumnFilters()}>
           Reset
           <IconX />
         </Button>
       )}
 
       {/* Add item button */}
-      <Button size={"sm"} className="ml-auto">
+      <Button size={"sm"} className="ml-auto" onClick={handleAddButton}>
         <IconPlus />
-        <span className="font-bold">Add trip</span>
+        <span>Add Payer</span>
       </Button>
     </div>
   );
-}
+};
+
+export default TableToolbar;

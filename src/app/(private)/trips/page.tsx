@@ -1,68 +1,49 @@
-import DataTable from "~/app/(private)/_components/data_table";
+"use client";
 
-/* Table Columns Import */
-import { columns } from "~/app/(private)/trips/_components/columns";
+/* React Imports */
+import { useEffect } from "react";
 
-const filterSettings = {
-  db_table: "trips",
+/* Components Imports */
+import DataTable from "~/app/(private)/_components/data-table";
+import TableToolbar from "~/app/(private)/trips/_components/table-toolbar";
+import TableFooter from "~/app/(private)/trips/_components/table-footer";
+import { tableColumns } from "~/app/(private)/trips/_components/table-columns";
+import Drawer from "~/app/(private)/trips/_components/drawer";
 
-  defaultColumnsHidden: {
-    status: false,
-    level_of_service: false,
-  },
-  searchBy: {
-    placeholder: "Filter trips ...",
-    defaultValue: "passenger_name",
-    selectItems: [
-      { label: "Trip ID", value: "id" },
-      { label: "Name", value: "passenger_name" },
-      { label: "Phone", value: "passenger_phone" },
-      { label: "PU Address", value: "pickup_address" },
-      { label: "DO Address", value: "dropoff_address" },
-    ],
-  },
-  dateFilter: true,
-  rowFilter: [
-    {
-      title: "Status",
-      column: "status",
-      options: [
-        { label: "Completed", value: "Completed" },
-        { label: "Will Call", value: "Will Call" },
-        { label: "Canceled", value: "Canceled" },
-      ],
-    },
+/* Store Imports */
+import { useDrawerStore } from "~/store/use-drawer-store";
 
-    {
-      title: "LOS",
-      column: "level_of_service",
-      options: [
-        { label: "Bariatric Wheelchair", value: "Bariatric Wheelchair" },
-        { label: "Wheelchair", value: "Wheelchair" },
-        { label: "Stretcher", value: "Stretcher" },
-        { label: "Ambulatory", value: "Ambulatory" },
-        { label: "Curb 2 Curb", value: "Curb 2 Curb" },
-        { label: "Door 2 Door", value: "Door 2 Door" },
-      ],
-    },
+/* API Imports */
+import { api } from "~/trpc/react";
 
-    {
-      title: "Payer",
-      column: "payer",
-      options: [
-        { label: "alivi", value: "ALIVI" },
-        { label: "modivcare", value: "MODIVCARE" },
-        { label: "saferide", value: "SAFERIDE" },
-        { label: "a2c", value: "A2C" },
-      ],
-    },
-  ],
+const Trips = () => {
+  /* Global states */
+  const refreshData = useDrawerStore((state) => state.refreshData);
+
+  /* API request */
+  const { data, isFetching, refetch } = api.trip.readTrips.useQuery();
+
+  /* Data refresh */
+  useEffect(() => {
+    if (refreshData) {
+      refetch();
+      useDrawerStore.setState({ refreshData: false });
+    }
+  }, [refreshData]);
+
+  return (
+    <main className="flex h-full flex-col p-2">
+      <DataTable
+        data={data ?? []}
+        isLoading={isFetching}
+        TableToolbar={TableToolbar}
+        TableFooter={TableFooter}
+        tableColumns={tableColumns}
+      />
+
+      <Drawer />
+    </main>
+  );
 };
 
-export default function Trips() {
-  return (
-    <div className="p-4">
-      <DataTable columns={columns} filterSettings={filterSettings} />
-    </div>
-  );
-}
+export default Trips;

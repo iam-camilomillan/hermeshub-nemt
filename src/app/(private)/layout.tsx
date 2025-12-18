@@ -1,24 +1,19 @@
 /* Next Imports */
 import { redirect } from "next/navigation";
 
-/* Auth Imports */
-import { getSession } from "~/server/better-auth/server";
-
 /* Shadcn Imports */
 import { SidebarInset, SidebarProvider } from "~/app/_components/ui/sidebar";
-
 import { Toaster } from "~/app/_components/ui/sonner";
 
 /* Components Imports */
 import Sidebar from "~/app/_components/layout/sidebar";
-import MainHeader from "./_components/main_header";
+import MainHeader from "./_components/main-header";
 
-export default async function PrivateLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  /* Auth Validation */
+/* Auth Imports */
+import { getSession } from "~/server/better-auth/server";
+
+const PrivateLayout = async ({ children }: { children: React.ReactNode }) => {
+  /* Auth validation */
   const session = await getSession();
   if (!session) redirect("/login");
 
@@ -38,4 +33,6 @@ export default async function PrivateLayout({
       </SidebarInset>
     </SidebarProvider>
   );
-}
+};
+
+export default PrivateLayout;

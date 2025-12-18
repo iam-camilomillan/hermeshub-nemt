@@ -1,11 +1,13 @@
-export default function Users() {
+const Users = () => {
   return (
     <main className="flex items-center justify-center">
       <section>
-        <div className="">
+        <div>
           <span>A very beautiful users page.</span>
         </div>
       </section>
     </main>
   );
-}
+};
+
+export default Users;

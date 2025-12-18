@@ -1,6 +1,3 @@
-/* Table imports */
-import { type Column } from "@tanstack/react-table";
-
 /* Shadcn imports */
 import {
   Popover,
@@ -24,8 +21,11 @@ import {
 /* Icons imports */
 import { IconCirclePlus } from "@tabler/icons-react";
 
-/* Type declarations */
-interface DataTableRowFilterProps<TData, TValue> {
+/* Type Imports */
+import { type Column } from "@tanstack/react-table";
+
+/* TableRowFilter Props */
+interface TableRowFilterProps<TData, TValue> {
   column?: Column<TData, TValue>;
   title?: string;
   options: {
@@ -35,11 +35,11 @@ interface DataTableRowFilterProps<TData, TValue> {
   }[];
 }
 
-export default function DataTableRowFilter<TData, TValue>({
+const TableRowFilter = <TData, TValue>({
   column,
   title,
   options,
-}: DataTableRowFilterProps<TData, TValue>) {
+}: TableRowFilterProps<TData, TValue>) => {
   const facets = column?.getFacetedUniqueValues();
   const selectedValues = new Set(column?.getFilterValue() as string[]);
 
@@ -152,4 +152,6 @@ export default function DataTableRowFilter<TData, TValue>({
       </PopoverContent>
     </Popover>
   );
-}
+};
+
+export default TableRowFilter;

@@ -37,7 +37,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "~/app/_components/ui/dialog";
-import { Switch } from "~/app/_components/ui/switch";
 import { Separator } from "~/app/_components/ui/separator";
 import { Spinner } from "~/app/_components/ui/spinner";
 
@@ -57,26 +56,15 @@ import { api } from "~/trpc/react";
 const defaultItemData = {
   id: "",
   public_id: "",
-  name: "",
-  email: "",
-  additional_email: "",
+  first_name: "",
+  last_name: "",
   phone_number: "",
   additional_phone_number: "",
-  label_color: "",
-  signature_at_pu: false,
-  signature_at_do: false,
+  address: "",
+  address_location_type: "",
+  additional_address: "",
+  additional_address_location_type: "",
 };
-
-/* Color Options */
-const colorOptions = [
-  { label: "Default", value: "oklch(98.5% 0 0)" },
-  { label: "Purple", value: "oklch(71.4% 0.203 305.504)" },
-  { label: "Red", value: "oklch(70.4% 0.191 22.216)" },
-  { label: "Orange", value: "oklch(75% 0.183 55.934)" },
-  { label: "Yellow", value: "oklch(85.2% 0.199 91.936)" },
-  { label: "Green", value: "oklch(79.2% 0.209 151.711)" },
-  { label: "Blue", value: "oklch(70.7% 0.165 254.624)" },
-];
 
 const Drawer = () => {
   /* Global states */
@@ -88,7 +76,7 @@ const Drawer = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
 
   /* API request */
-  const request = api.payer.savePayer.useMutation({
+  const request = api.member.saveMember.useMutation({
     onSuccess: () => {
       useDrawerStore.setState({
         isDrawerOpen: false,
@@ -98,8 +86,8 @@ const Drawer = () => {
 
       toast.success(
         itemState.id
-          ? "Payer updated successfully"
-          : "Payer created successfully",
+          ? "Member updated successfully"
+          : "Member created successfully",
         {
           action: {
             label: "Undo",
@@ -111,7 +99,7 @@ const Drawer = () => {
 
     onError: () => {
       toast.error(
-        itemState.id ? "Error updating payer" : "Error creating payer",
+        itemState.id ? "Error updating member" : "Error creating member",
       );
     },
   });
@@ -170,14 +158,15 @@ const Drawer = () => {
     request.mutateAsync({
       id: itemState.id,
       public_id: itemState.public_id,
-      name: itemState.name,
-      email: itemState.email,
-      additional_email: itemState.additional_email,
+      first_name: itemState.first_name,
+      last_name: itemState.last_name,
       phone_number: itemState.phone_number,
       additional_phone_number: itemState.additional_phone_number,
-      label_color: itemState.label_color,
-      signature_at_pu: itemState.signature_at_pu,
-      signature_at_do: itemState.signature_at_do,
+      address: itemState.address,
+      address_location_type: itemState.address_location_type,
+      additional_address: itemState.additional_address,
+      additional_address_location_type:
+        itemState.additional_address_location_type,
     });
   };
 
@@ -217,7 +206,11 @@ const Drawer = () => {
       >
         {/* Sheet Header */}
         <SheetHeader className="flex flex-row items-center justify-between pb-0">
-          <SheetTitle>{itemState.id ? itemState.name : "Add Payer"}</SheetTitle>
+          <SheetTitle>
+            {itemState.id
+              ? `Edit ${itemState.first_name} ${itemState.last_name}`
+              : "Add Member"}
+          </SheetTitle>
 
           <SheetClose>
             <Button variant="ghost" className="size-6 p-0" asChild>
@@ -235,12 +228,6 @@ const Drawer = () => {
             >
               Information
             </TabsTrigger>
-            <TabsTrigger
-              value="billing"
-              className="rounded-none dark:data-[state=active]:border-b-2 dark:data-[state=active]:border-purple-400 dark:data-[state=active]:border-x-transparent dark:data-[state=active]:border-t-transparent"
-            >
-              Billing
-            </TabsTrigger>
           </TabsList>
 
           {/* Information */}
@@ -248,9 +235,9 @@ const Drawer = () => {
             <form>
               <div className="grid grid-cols-2 gap-4">
                 <div className="flex flex-col gap-y-2">
-                  <Label htmlFor="payer_public_id">Payer ID</Label>
+                  <Label htmlFor="member_public_id">Member ID</Label>
                   <Input
-                    id="payer_public_id"
+                    id="member_public_id"
                     defaultValue={itemState.public_id}
                     onChange={(e) =>
                       setItemState({
@@ -261,40 +248,33 @@ const Drawer = () => {
                   />
                 </div>
 
-                <div className="flex flex-col gap-y-2">
-                  <Label htmlFor="payer_name">Payer Name</Label>
-                  <Input
-                    id="payer_name"
-                    defaultValue={itemState.name}
-                    onChange={(e) =>
-                      setItemState({ ...itemState, name: e.target.value })
-                    }
-                  />
-                </div>
-
-                <div className="flex flex-col gap-y-2">
-                  <Label htmlFor="email">Email</Label>
-                  <Input
-                    id="email"
-                    defaultValue={itemState.email}
-                    onChange={(e) =>
-                      setItemState({ ...itemState, email: e.target.value })
-                    }
-                  />
-                </div>
-
-                <div className="flex flex-col gap-y-2">
-                  <Label htmlFor="additional_email">Additional Email</Label>
-                  <Input
-                    id="additional_email"
-                    defaultValue={itemState.additional_email}
-                    onChange={(e) =>
-                      setItemState({
-                        ...itemState,
-                        additional_email: e.target.value,
-                      })
-                    }
-                  />
+                <div className="col-span-2 grid grid-cols-2 gap-4">
+                  <div className="flex flex-col gap-y-2">
+                    <Label htmlFor="first_name">First Name</Label>
+                    <Input
+                      id="first_name"
+                      defaultValue={itemState.first_name}
+                      onChange={(e) =>
+                        setItemState({
+                          ...itemState,
+                          first_name: e.target.value,
+                        })
+                      }
+                    />
+                  </div>
+                  <div className="flex flex-col gap-y-2">
+                    <Label htmlFor="last_name">Last Name</Label>
+                    <Input
+                      id="last_name"
+                      defaultValue={itemState.last_name}
+                      onChange={(e) =>
+                        setItemState({
+                          ...itemState,
+                          last_name: e.target.value,
+                        })
+                      }
+                    />
+                  </div>
                 </div>
 
                 <div className="flex flex-col gap-y-2">
@@ -327,74 +307,92 @@ const Drawer = () => {
                   />
                 </div>
 
-                <div className="flex flex-col gap-y-2">
-                  <Label htmlFor="label_color">Label Color</Label>
+                <Separator className="col-span-2" />
 
+                <div className="col-span-2 flex flex-col gap-y-2">
+                  <Label htmlFor="address">Address</Label>
+                  <Input
+                    id="address"
+                    defaultValue={itemState.address}
+                    onChange={(e) =>
+                      setItemState({
+                        ...itemState,
+                        address: e.target.value,
+                      })
+                    }
+                  />
+                </div>
+
+                <div className="col-span-2 flex flex-col gap-y-2">
+                  <Label htmlFor="address_location_type">Location Type</Label>
                   <Select
-                    defaultValue={itemState.label_color ?? "oklch(98.5% 0 0)"}
+                    defaultValue={itemState.address_location_type}
                     onValueChange={(value) =>
                       setItemState({
                         ...itemState,
-                        label_color: value,
+                        address_location_type: value,
                       })
                     }
                   >
-                    <SelectTrigger id="label_color" className="w-full">
-                      <SelectValue placeholder="Select a color" />
+                    <SelectTrigger
+                      id="address_location_type"
+                      className="w-full"
+                    >
+                      <SelectValue placeholder="Select type" />
                     </SelectTrigger>
-
                     <SelectContent>
-                      {colorOptions.map((option) => (
-                        <SelectItem key={option.value} value={option.value}>
-                          <div
-                            className="size-4 rounded-full"
-                            style={{
-                              backgroundColor: option.value,
-                            }}
-                          />
-
-                          <span>{option.label}</span>
-                        </SelectItem>
-                      ))}
+                      <SelectItem value="residential">Residential</SelectItem>
+                      <SelectItem value="facility">Facility</SelectItem>
+                      <SelectItem value="other">Other</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
 
                 <Separator className="col-span-2" />
 
-                <div className="flex flex-col gap-y-2">
-                  <Label htmlFor="signature_at_pu">Signature at PU</Label>
-                  <Switch
-                    id="signature_at_pu"
-                    checked={itemState.signature_at_pu}
-                    onCheckedChange={(value) => {
+                <div className="col-span-2 flex flex-col gap-y-2">
+                  <Label htmlFor="additional_address">Additional Address</Label>
+                  <Input
+                    id="additional_address"
+                    defaultValue={itemState.additional_address}
+                    onChange={(e) =>
                       setItemState({
                         ...itemState,
-                        signature_at_pu: value,
-                      });
-                    }}
+                        additional_address: e.target.value,
+                      })
+                    }
                   />
                 </div>
 
-                <div className="flex flex-col gap-y-2">
-                  <Label htmlFor="signature_at_do">Signature at DO</Label>
-                  <Switch
-                    id="signature_at_do"
-                    checked={itemState.signature_at_do}
-                    onCheckedChange={(value) => {
+                <div className="col-span-2 flex flex-col gap-y-2">
+                  <Label htmlFor="additional_address_location_type">
+                    Location Type
+                  </Label>
+                  <Select
+                    defaultValue={itemState.additional_address_location_type}
+                    onValueChange={(value) =>
                       setItemState({
                         ...itemState,
-                        signature_at_do: value,
-                      });
-                    }}
-                  />
+                        additional_address_location_type: value,
+                      })
+                    }
+                  >
+                    <SelectTrigger
+                      id="additional_address_location_type"
+                      className="w-full"
+                    >
+                      <SelectValue placeholder="Select type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="residential">Residential</SelectItem>
+                      <SelectItem value="facility">Facility</SelectItem>
+                      <SelectItem value="other">Other</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
             </form>
           </TabsContent>
-
-          {/* Billing */}
-          <TabsContent value="billing">Billing</TabsContent>
         </Tabs>
 
         {/* Footer */}

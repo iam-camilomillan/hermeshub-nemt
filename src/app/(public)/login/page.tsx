@@ -1,10 +1,10 @@
-/* Components Imports */
-import { LoginForm } from "~/app/_components/layout/login-form";
-
 /* Icons Imports */
 import { IconChartArcs } from "@tabler/icons-react";
 
-export default function Login() {
+/* Components Imports */
+import LoginForm from "~/app/_components/layout/login-form";
+
+const Login = () => {
   return (
     <main className="flex min-h-screen items-center justify-center">
       <div className="flex w-full max-w-md flex-col gap-6">
@@ -17,4 +17,6 @@ export default function Login() {
       </div>
     </main>
   );
-}
+};
+
+export default Login;

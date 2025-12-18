@@ -57,6 +57,20 @@
       "when": 1765249680150,
       "tag": "0007_superb_hemingway",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1765595309913,
+      "tag": "0008_exotic_shard",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1765596386004,
+      "tag": "0009_charming_moon_knight",
+      "breakpoints": true
     }
   ]
 }

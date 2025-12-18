@@ -1,12 +1,9 @@
 "use client";
 
-/* React imports */
+/* React Imports */
 import { useState } from "react";
 
-/* Table imports */
-import { type Table } from "@tanstack/react-table";
-
-/* Shadcn imports */
+/* Shadcn Imports */
 import { Input } from "~/app/_components/ui/input";
 import { Button } from "~/app/_components/ui/button";
 import {
@@ -19,30 +16,31 @@ import {
   SelectValue,
 } from "~/app/_components/ui/select";
 
-/* Icons imports */
+/* Icons Imports */
 import { IconPlus, IconX } from "@tabler/icons-react";
 
-/* Store imports */
-import { useDrawerStore } from "~/store/useTableStore";
+/* Store Imports */
+import { useDrawerStore } from "~/store/use-drawer-store";
 
-/* Types Imports */
-import { tableFilterSettings } from "~/app/(private)/payers/utils/table_filter_settings";
+/* Utils Imports */
+import { tableFilterSettings } from "~/app/(private)/members/utils/table-filter-settings";
 
-/* Types definitios */
+/* Type Imports */
+import { type Table } from "@tanstack/react-table";
+
+/* TableToolbar Props */
 interface TableToolbarProps<TData> {
   table: Table<TData>;
 }
 
-export default function TableToolbar<TData>({
-  table,
-}: TableToolbarProps<TData>) {
+const TableToolbar = <TData,>({ table }: TableToolbarProps<TData>) => {
   /* Local states */
   const [searchBy, setSearchBy] = useState(
     tableFilterSettings.searchBy.defaultValue,
   );
   const isFiltered = table?.getState().columnFilters.length > 0;
 
-  /* Add Item Action */
+  /* Add item action */
   const handleAddButton = () => {
     useDrawerStore.setState({ isDrawerOpen: true });
   };
@@ -94,8 +92,10 @@ export default function TableToolbar<TData>({
       {/* Add item button */}
       <Button size={"sm"} className="ml-auto" onClick={handleAddButton}>
         <IconPlus />
-        <span>Add Payer</span>
+        <span>Add Member</span>
       </Button>
     </div>
   );
-}
+};
+
+export default TableToolbar;

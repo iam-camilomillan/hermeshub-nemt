@@ -1,12 +1,18 @@
 import "server-only";
 
-import { createHydrationHelpers } from "@trpc/react-query/rsc";
-import { headers } from "next/headers";
+/* React Imports */
 import { cache } from "react";
 
-import { createCaller, type AppRouter } from "~/server/api/root";
+/* Next Imports */
+import { headers } from "next/headers";
+
+/* TRPC Imports */
+import { createHydrationHelpers } from "@trpc/react-query/rsc";
+
+/* Utils Imports */
 import { createTRPCContext } from "~/server/api/trpc";
-import { createQueryClient } from "./query-client";
+import { createQueryClient } from "~/trpc/query-client";
+import { createCaller, type AppRouter } from "~/server/api/root";
 
 /**
  * This wraps the `createTRPCContext` helper and provides the required context for the tRPC API when

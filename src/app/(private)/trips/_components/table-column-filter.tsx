@@ -1,10 +1,7 @@
-/* React imports */
+/* React Imports */
 import { useMemo } from "react";
 
-/* Table imports */
-import { type Table } from "@tanstack/react-table";
-
-/* Shadcn imports */
+/* Shadcn Imports */
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -13,17 +10,20 @@ import {
 } from "~/app/_components/ui/dropdown-menu";
 import { Button } from "~/app/_components/ui/button";
 
-/* Icons imports */
+/* Icons Imports */
 import { IconAdjustments } from "@tabler/icons-react";
 
-/* Type definitions */
-interface DataTableViewOptionsProps<TData> {
+/* Type Imports */
+import { type Table } from "@tanstack/react-table";
+
+/* TableColumnFilter Props */
+interface TableColumnFilterProps<TData> {
   table: Table<TData>;
 }
 
-export default function DataTableColumnHeader<TData>({
+const TableColumnFilter = <TData,>({
   table,
-}: DataTableViewOptionsProps<TData>) {
+}: TableColumnFilterProps<TData>) => {
   const columns = useMemo(
     () =>
       table
@@ -43,7 +43,7 @@ export default function DataTableColumnHeader<TData>({
         </Button>
       </DropdownMenuTrigger>
 
-      <DropdownMenuContent align="end" className="w-56">
+      <DropdownMenuContent align="end" className="w-42">
         {columns.map((column) => (
           <DropdownMenuCheckboxItem
             key={column.id}
@@ -57,4 +57,6 @@ export default function DataTableColumnHeader<TData>({
       </DropdownMenuContent>
     </DropdownMenu>
   );
-}
+};
+
+export default TableColumnFilter;

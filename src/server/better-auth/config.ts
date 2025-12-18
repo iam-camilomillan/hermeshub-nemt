@@ -36,12 +36,13 @@ export const auth = betterAuth({
       },
     },
   },
-  pages: {
-    signIn: "/login",
-  },
   emailAndPassword: {
     enabled: true,
   },
+  pages: {
+    signIn: "/login",
+  },
+
   plugins: [
     username({
       usernameValidator: (username) => {

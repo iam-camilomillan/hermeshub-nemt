@@ -1,10 +1,7 @@
-/* React imports */
+/* React Imports */
 import { useEffect, useState } from "react";
 
-/* Table imports */
-import { type Table } from "@tanstack/react-table";
-
-/* Shadcn imports */
+/* Shadcn Imports */
 import {
   Popover,
   PopoverContent,
@@ -12,21 +9,23 @@ import {
 } from "~/app/_components/ui/popover";
 import { Button } from "~/app/_components/ui/button";
 import { Calendar } from "~/app/_components/ui/calendar";
-
-/* Icons imports */
-import { IconCalendar } from "@tabler/icons-react";
-
-/* Types definitions */
-import type { DateRange } from "react-day-picker";
 import { Separator } from "~/app/_components/ui/separator";
 import { Badge } from "~/app/_components/ui/badge";
-interface DataTableDateFilterProps<TData> {
+
+/* Icons Imports */
+import { IconCalendar } from "@tabler/icons-react";
+
+/* Type Imports */
+import { type Table } from "@tanstack/react-table";
+import { type DateRange } from "react-day-picker";
+
+/* TableDateFilter Props */
+interface TableDateFilterProps<TData> {
   table: Table<TData>;
 }
 
-export default function DataTableRowFilter<TData>({
-  table,
-}: DataTableDateFilterProps<TData>) {
+const TableDateFilter = <TData,>({ table }: TableDateFilterProps<TData>) => {
+  /* Local states */
   const [date, setDate] = useState<DateRange | undefined>({
     from: new Date(),
     to: new Date(),
@@ -44,7 +43,7 @@ export default function DataTableRowFilter<TData>({
     <Popover>
       <PopoverTrigger asChild>
         <Button variant="outline" size="sm" className="h-8 border-dashed">
-          {/* Option */}
+          {/* Label */}
           <IconCalendar />
           <span>Date</span>
 
@@ -53,21 +52,23 @@ export default function DataTableRowFilter<TData>({
             <>
               <Separator orientation="vertical" className="mx-2 h-4" />
 
-              <div className="flex gap-x-1">
-                from:
+              <div className="flex items-center gap-x-1">
+                <span>from:</span>
+
                 <Badge
                   variant={"secondary"}
-                  className="rounded-sm bg-neutral-700 px-1 font-normal"
+                  className="rounded-sm px-1 font-normal"
                 >
                   {date?.from?.toLocaleDateString("en-US") ?? "None"}
                 </Badge>
               </div>
 
-              <div className="flex gap-x-1">
-                to:
+              <div className="flex items-center gap-x-1">
+                <span>to:</span>
+
                 <Badge
                   variant={"secondary"}
-                  className="rounded-sm bg-neutral-700 px-1 font-normal"
+                  className="rounded-sm px-1 font-normal"
                 >
                   {date?.to?.toLocaleDateString("en-US") ?? "None"}
                 </Badge>
@@ -84,10 +85,11 @@ export default function DataTableRowFilter<TData>({
           onSelect={setDate}
           defaultMonth={date?.from ?? new Date()}
           numberOfMonths={2}
-          className=""
           captionLayout="dropdown"
         />
       </PopoverContent>
     </Popover>
   );
-}
+};
+
+export default TableDateFilter;

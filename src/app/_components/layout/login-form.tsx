@@ -25,26 +25,23 @@ import {
 import { Input } from "~/app/_components/ui/input";
 import { Button } from "~/app/_components/ui/button";
 
-/* Utils Imports */
-import { cn } from "~/lib/utils";
-
 /* Icons Imports */
 import { IconLoader2 } from "@tabler/icons-react";
 
 /* Auth Imports */
 import { authClient } from "~/server/better-auth/client";
 
-export function LoginForm({
-  className,
-  ...props
-}: React.ComponentProps<"div">) {
+/* Utils Imports */
+import { cn } from "~/lib/utils";
+
+const LoginForm = ({ className, ...props }: React.ComponentProps<"div">) => {
   const router = useRouter();
 
-  /* Event States */
+  /* Event states */
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState({ type: "", message: "" });
 
-  /* Login States */
+  /* Login states */
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
@@ -166,4 +163,6 @@ export function LoginForm({
       </FieldDescription>
     </div>
   );
-}
+};
+
+export default LoginForm;

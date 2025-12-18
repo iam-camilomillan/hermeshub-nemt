@@ -54,7 +54,7 @@ import { type Session } from "~/server/better-auth/config";
 /* Sidebar Groups */
 const sidebarGroups = [
   {
-    label: "",
+    label: null,
     items: [
       {
         label: "Dashboard",
@@ -105,10 +105,10 @@ const sidebarGroups = [
   },
 ];
 
-export default async function AppSidebar({
+const AppSidebar = ({
   session,
   ...props
-}: { session: Session } & React.ComponentProps<typeof Sidebar>) {
+}: { session: Session } & React.ComponentProps<typeof Sidebar>) => {
   return (
     <Sidebar collapsible="offcanvas" {...props}>
       <SidebarHeader>
@@ -116,7 +116,7 @@ export default async function AppSidebar({
           <SidebarMenuItem>
             <SidebarMenuButton
               asChild
-              className="data-[slot=sidebar-menu-button]:!p-1"
+              className="data-[slot=sidebar-menu-button]:p-1!"
             >
               <Link href="/dashboard">
                 <IconChartArcs />
@@ -248,4 +248,6 @@ export default async function AppSidebar({
       </SidebarFooter>
     </Sidebar>
   );
-}
+};
+
+export default AppSidebar;
