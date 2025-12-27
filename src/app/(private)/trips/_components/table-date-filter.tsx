@@ -1,5 +1,5 @@
 /* React Imports */
-import { useEffect, useState } from "react";
+import React from "react";
 
 /* Shadcn Imports */
 import {
@@ -15,6 +15,9 @@ import { Badge } from "~/app/_components/ui/badge";
 /* Icons Imports */
 import { IconCalendar } from "@tabler/icons-react";
 
+/* Store Imports */
+import { useTripsStore } from "~/store/use-trips-store";
+
 /* Type Imports */
 import { type Table } from "@tanstack/react-table";
 import { type DateRange } from "react-day-picker";
@@ -25,21 +28,21 @@ interface TableDateFilterProps<TData> {
 }
 
 const TableDateFilter = <TData,>({ table }: TableDateFilterProps<TData>) => {
-  /* Local states */
-  const [date, setDate] = useState<DateRange | undefined>({
-    from: new Date(),
-    to: new Date(),
-  });
+  /* Global states */
+  const { filtersData, setFiltersData } = useTripsStore();
 
-  useEffect(() => {
-    table
-      .getColumn("date")
-      ?.setFilterValue(
-        date?.from || date?.to ? [date.from, date.to] : undefined,
-      );
-  }, [table, date]);
-
-  console.log(date);
+  /* Handlers */
+  const onSelect = (range: DateRange | undefined) => {
+    if (range?.from) {
+      setFiltersData({
+        ...filtersData,
+        date: {
+          from: range.from,
+          to: range.to ?? range.from,
+        },
+      });
+    }
+  };
 
   return (
     <Popover>
@@ -50,7 +53,7 @@ const TableDateFilter = <TData,>({ table }: TableDateFilterProps<TData>) => {
           <span>Date</span>
 
           {/* Selected values */}
-          {date && (
+          {filtersData.date && (
             <>
               <Separator orientation="vertical" className="mx-2 h-4" />
 
@@ -61,7 +64,7 @@ const TableDateFilter = <TData,>({ table }: TableDateFilterProps<TData>) => {
                   variant={"secondary"}
                   className="rounded-sm px-1 font-normal"
                 >
-                  {date?.from?.toLocaleDateString("en-US") ?? "None"}
+                  {filtersData.date.from.toLocaleDateString("en-US")}
                 </Badge>
               </div>
 
@@ -72,7 +75,7 @@ const TableDateFilter = <TData,>({ table }: TableDateFilterProps<TData>) => {
                   variant={"secondary"}
                   className="rounded-sm px-1 font-normal"
                 >
-                  {date?.to?.toLocaleDateString("en-US") ?? "None"}
+                  {filtersData.date.to.toLocaleDateString("en-US")}
                 </Badge>
               </div>
             </>
@@ -83,9 +86,9 @@ const TableDateFilter = <TData,>({ table }: TableDateFilterProps<TData>) => {
       <PopoverContent className="w-fit p-0" align="start">
         <Calendar
           mode="range"
-          selected={date}
-          onSelect={setDate}
-          defaultMonth={date?.from ?? new Date()}
+          selected={filtersData.date}
+          onSelect={onSelect}
+          defaultMonth={filtersData.date.from}
           numberOfMonths={2}
           captionLayout="dropdown"
         />

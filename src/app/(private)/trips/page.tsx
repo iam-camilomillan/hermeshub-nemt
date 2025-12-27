@@ -12,6 +12,7 @@ import Drawer from "~/app/(private)/trips/_components/drawer";
 
 /* Store Imports */
 import { useDrawerStore } from "~/store/use-drawer-store";
+import { useTripsStore } from "~/store/use-trips-store";
 
 /* API Imports */
 import { api } from "~/trpc/react";
@@ -19,9 +20,12 @@ import { api } from "~/trpc/react";
 const Trips = () => {
   /* Global states */
   const refreshData = useDrawerStore((state) => state.refreshData);
+  const filtersData = useTripsStore((state) => state.filtersData);
 
   /* API request */
-  const { data, isFetching, refetch } = api.trip.readTrips.useQuery();
+  const { data, isFetching, refetch } = api.trip.readTrips.useQuery({
+    date: filtersData.date,
+  });
 
   /* Data refresh */
   useEffect(() => {

@@ -78,6 +78,7 @@ export const tableColumns: ColumnDef<any>[] = [
   {
     id: "public_id",
     accessorKey: "public_id",
+
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Trip ID" />
     ),

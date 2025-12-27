@@ -5,7 +5,7 @@ import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { z } from "zod";
 
 /* Drizzle Imports */
-import { eq } from "drizzle-orm";
+import { eq, and, gte, lte } from "drizzle-orm";
 
 /* DB Imports */
 import { trip } from "~/server/db/schema";
@@ -90,11 +90,27 @@ export const tripRouter = createTRPCRouter({
       }
     }),
 
-  readTrips: protectedProcedure.query(async ({ ctx }) => {
-    const trips = await ctx.db.query.trip.findMany({});
+  readTrips: protectedProcedure
+    .input(
+      z.object({
+        date: z.object({
+          from: z.date(),
+          to: z.date(),
+        }),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const { date } = input;
 
-    return trips ?? null;
-  }),
+      const trips = await ctx.db.query.trip.findMany({
+        where: and(
+          gte(trip.date, date.from.toISOString().split("T")[0]!),
+          lte(trip.date, date.to.toISOString().split("T")[0]!),
+        ),
+      });
+
+      return trips ?? null;
+    }),
 
   importTrips: protectedProcedure
     .input(

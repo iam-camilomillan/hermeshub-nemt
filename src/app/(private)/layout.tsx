@@ -18,7 +18,7 @@ const PrivateLayout = async ({ children }: { children: React.ReactNode }) => {
   if (!session) redirect("/login");
 
   return (
-    <SidebarProvider>
+    <SidebarProvider className="h-svh overflow-hidden">
       <Sidebar variant="inset" session={session} />
 
       <SidebarInset>
@@ -27,7 +27,7 @@ const PrivateLayout = async ({ children }: { children: React.ReactNode }) => {
         <div className="flex flex-1 flex-col overflow-hidden">
           <div className="@container/main flex h-full flex-col">
             <Toaster position="top-center" />
-            <div className="flex-1 overflow-auto">{children}</div>
+            <div className="flex-1 overflow-hidden">{children}</div>
           </div>
         </div>
       </SidebarInset>
