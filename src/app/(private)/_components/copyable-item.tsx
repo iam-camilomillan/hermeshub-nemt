@@ -43,7 +43,11 @@ const CopyableItem = ({ children, label, value }: CopyableItemProps) => {
       }}
     >
       <TooltipTrigger asChild>
-        <Button variant={"link"} onClick={handleCopy} className="p-0">
+        <Button
+          variant={"link"}
+          onClick={handleCopy}
+          className="has-[>svg]:px-0"
+        >
           {children}
         </Button>
       </TooltipTrigger>

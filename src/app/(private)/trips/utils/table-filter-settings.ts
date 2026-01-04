@@ -1,5 +1,9 @@
 export const tableFilterSettings = {
-  defaultColumnsHidden: {},
+  defaultColumnsHidden: {
+    status: false,
+    passenger_phone_number: false,
+    level_of_service: false,
+  },
   searchBy: {
     placeholder: "Filter trips ...",
     defaultValue: "passenger_name",
@@ -19,6 +23,7 @@ export const tableFilterSettings = {
         { label: "Completed", value: "Completed" },
         { label: "Will Call", value: "Will Call" },
         { label: "Canceled", value: "Canceled" },
+        { label: "Unassigned", value: "unassigned" },
       ],
     },
 

@@ -9,6 +9,7 @@ import TableToolbar from "~/app/(private)/trips/_components/table-toolbar";
 import TableFooter from "~/app/(private)/trips/_components/table-footer";
 import { tableColumns } from "~/app/(private)/trips/_components/table-columns";
 import Drawer from "~/app/(private)/trips/_components/drawer";
+import { tableFilterSettings } from "~/app/(private)/trips/utils/table-filter-settings";
 
 /* Store Imports */
 import { useDrawerStore } from "~/store/use-drawer-store";
@@ -23,9 +24,17 @@ const Trips = () => {
   const filtersData = useTripsStore((state) => state.filtersData);
 
   /* API request */
-  const { data, isFetching, refetch } = api.trip.readTrips.useQuery({
-    date: filtersData.date,
-  });
+  const { data, isFetching, refetch } = api.trip.readTrips.useQuery(
+    {
+      date: filtersData.date,
+    },
+    {
+      staleTime: 1000 * 60 * 60,
+      refetchOnWindowFocus: false,
+      refetchOnMount: false,
+      refetchOnReconnect: false,
+    },
+  );
 
   /* Data refresh */
   useEffect(() => {
@@ -43,6 +52,7 @@ const Trips = () => {
         TableToolbar={TableToolbar}
         TableFooter={TableFooter}
         tableColumns={tableColumns}
+        initialColumnVisibility={tableFilterSettings.defaultColumnsHidden}
       />
 
       <Drawer />

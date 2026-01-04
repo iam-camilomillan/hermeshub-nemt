@@ -116,7 +116,13 @@ export const tripRouter = createTRPCRouter({
     .input(
       z.object({
         trips: z.array(z.record(z.string(), z.any())),
-        payer: z.enum(["ALIVI", "MODIVCARE", "SAFERIDE", "ACCESS TO CARE"]),
+        payer: z.enum([
+          "ALIVI",
+          "MODIVCARE",
+          "SAFERIDE",
+          "ACCESS TO CARE",
+          "ROUTEGENIE",
+        ]),
       }),
     )
     .mutation(async ({ ctx, input }) => {
@@ -168,8 +174,6 @@ export const tripRouter = createTRPCRouter({
             mileage: getValue(["Mileage"]),
             notes: getValue(["Notes"]) ?? "",
           };
-
-          console.log(mappedTrip);
         } else if (payer === "MODIVCARE") {
           mappedTrip = {
             payer_trip_id: getValue(["Job Number", "Job #", "Trip ID"]),
@@ -193,6 +197,37 @@ export const tripRouter = createTRPCRouter({
             mileage: getValue(["Mileage", "Authorized Mileage"]),
             notes: getValue(["Comments", "Notes"]),
           };
+        } else if (payer === "ROUTEGENIE") {
+          mappedTrip = {
+            payer_trip_id: getValue(["Order ID"]),
+            status: getValue(["Status"]),
+            level_of_service: getValue(["Mode"]),
+
+            date: getValue(["Date"]),
+            scheduled_pickup_time: getValue(["Scheduled PU"]),
+            actual_pickup_time: getValue(["Pick up time"]),
+            scheduled_dropoff_time: getValue(["Appointment time"]),
+            actual_dropoff_time: getValue(["Drop off time"]),
+
+            pickup_address: getValue(["PU Address"]),
+            pickup_location_name: getValue(["PU Facility"]) ?? "None",
+            pickup_phone_number: getValue(["Pick Up Phone", "Phone"]) ?? "None",
+            dropoff_address: getValue(["DO Address"]),
+            dropoff_location_name: getValue(["DO Facility"]) ?? "None",
+            dropoff_phone_number: getValue(["Drop Off Phone"]) ?? "None",
+            mileage: getValue(["Mileage"]),
+
+            payer_passenger_id: getValue(["Member ID", "Subscription ID"]),
+            passenger_first_name: getValue(["Passenger name"]),
+            passenger_last_name: null,
+            passenger_phone_number: getValue(["Passenger phone"]),
+            payer_id: getValue(["Payer"]),
+
+            price: getValue(["Price"]),
+
+            vehicle_id: getValue(["Vehicle ID"]),
+            driver_id: getValue(["Driver ID"]),
+          };
         }
 
         // Common defaults and simple validations
@@ -204,15 +239,22 @@ export const tripRouter = createTRPCRouter({
         const tripData: typeof trip.$inferInsert = {
           id: crypto.randomUUID(),
           public_id: `TRIP-${Math.floor(Math.random() * 100000)}`, // Simple generation
-          status: "unassigned",
-
+          status: mappedTrip.status || "Unassigned",
+          level_of_service: String(mappedTrip.level_of_service),
           payer_trip_id: String(mappedTrip.payer_trip_id),
+
           date: mappedTrip.date as string,
           scheduled_pickup_time: mappedTrip.scheduled_pickup_time
             ? String(mappedTrip.scheduled_pickup_time)
             : null,
+          actual_pickup_time: mappedTrip.actual_pickup_time
+            ? String(mappedTrip.actual_pickup_time)
+            : null,
           scheduled_dropoff_time: mappedTrip.scheduled_dropoff_time
             ? String(mappedTrip.scheduled_dropoff_time)
+            : null,
+          actual_dropoff_time: mappedTrip.actual_dropoff_time
+            ? String(mappedTrip.actual_dropoff_time)
             : null,
 
           pickup_address: String(mappedTrip.pickup_address || "Unknown"),
@@ -225,6 +267,7 @@ export const tripRouter = createTRPCRouter({
             mappedTrip.dropoff_location_name || "Unknown",
           ),
           dropoff_phone_number: String(mappedTrip.dropoff_phone_number || ""),
+          mileage: String(mappedTrip.mileage) || "0.00",
 
           payer_passenger_id: String(
             mappedTrip.payer_passenger_id || "Unknown",
@@ -239,12 +282,14 @@ export const tripRouter = createTRPCRouter({
           passenger_date_of_birth:
             (mappedTrip.passenger_date_of_birth as string) || null,
 
-          level_of_service: String(mappedTrip.level_of_service),
-          mileage: String(mappedTrip.mileage),
+          notes: String(mappedTrip.notes) || "",
 
-          notes: String(mappedTrip.notes),
+          price: String(mappedTrip.price) || "0.00",
 
-          payer_id: payer,
+          vehicle_id: String(mappedTrip.vehicle_id || "Unknown"),
+          driver_id: String(mappedTrip.driver_id || "Unknown"),
+
+          payer_id: String(mappedTrip.payer_id || "Unknown"),
           companyId: ctx.session.user.companyId,
 
           createdAt: new Date(),

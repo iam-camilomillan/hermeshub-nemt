@@ -78,6 +78,20 @@
       "when": 1766092063647,
       "tag": "0010_icy_omega_sentinel",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1767551758354,
+      "tag": "0011_real_freak",
+      "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1767559306750,
+      "tag": "0012_goofy_roulette",
+      "breakpoints": true
     }
   ]
 }

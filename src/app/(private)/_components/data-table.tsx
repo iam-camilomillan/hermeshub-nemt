@@ -43,6 +43,7 @@ interface DataTableProps<TData, TValue> {
   TableFooter: React.ElementType;
   tableColumns: ColumnDef<TData, TValue>[];
   isLoading: boolean;
+  initialColumnVisibility?: VisibilityState;
 }
 
 const DataTable = <TData, TValue>({
@@ -51,10 +52,13 @@ const DataTable = <TData, TValue>({
   TableFooter,
   tableColumns,
   isLoading,
+  initialColumnVisibility = {},
 }: DataTableProps<TData, TValue>) => {
   /* Local states */
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(
+    initialColumnVisibility,
+  );
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [sorting, setSorting] = useState<SortingState>([]);
   const [pagination, setPagination] = useState<PaginationState>({

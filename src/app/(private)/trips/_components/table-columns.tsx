@@ -22,8 +22,18 @@ import {
   IconBedFlat,
   IconBrandGoogleMaps,
   IconCheck,
+  IconCircle,
+  IconCircleCheckFilled,
+  IconCircleChevronRight,
+  IconCircleDotted,
+  IconCircleFilled,
+  IconCircleLetterA,
+  IconCircleLetterI,
+  IconCircleLetterL,
+  IconCircleLetterU,
   IconDisabled,
   IconDotsVertical,
+  IconInfoCircle,
   IconOld,
   IconPhone,
   IconPhoneCall,
@@ -41,6 +51,15 @@ import { type ColumnDef } from "@tanstack/react-table";
 
 /* Type Definitions */
 type DateRange = [Date | null, Date | null] | undefined;
+
+const formatTime = (time: string | null | undefined) => {
+  if (!time) return "";
+  // Check if it matches HH:MM:SS format and slice
+  if (time.includes(":")) {
+    return time.slice(0, 5);
+  }
+  return time;
+};
 
 export const tableColumns: ColumnDef<any>[] = [
   /* Select checkbox */
@@ -88,9 +107,37 @@ export const tableColumns: ColumnDef<any>[] = [
         <Tooltip>
           <TooltipTrigger>
             {row.original.status.toString() === "Completed" && (
-              <Badge className="bg-green-400">
+              <Badge className="bg-zinc-400">
                 <span className="font-bold">&#35;{row.original.public_id}</span>
                 <IconCheck />
+              </Badge>
+            )}
+
+            {row.original.status.toString() === "Loaded" && (
+              <Badge className="bg-green-500 font-bold">
+                <span className="font-bold">&#35;{row.original.public_id}</span>
+                <IconCircleLetterL />
+              </Badge>
+            )}
+
+            {row.original.status.toString() === "In route" && (
+              <Badge className="bg-green-400 font-bold">
+                <span className="font-bold">&#35;{row.original.public_id}</span>
+                <IconCircleLetterI />
+              </Badge>
+            )}
+
+            {row.original.status.toString() === "Assigned" && (
+              <Badge className="bg-blue-400 font-bold">
+                <span className="font-bold">&#35;{row.original.public_id}</span>
+                <IconCircleLetterA />
+              </Badge>
+            )}
+
+            {row.original.status.toString() === "Unassigned" && (
+              <Badge className="bg-amber-400 font-bold">
+                <span className="font-bold">&#35;{row.original.public_id}</span>
+                <IconCircleLetterU />
               </Badge>
             )}
 
@@ -107,13 +154,6 @@ export const tableColumns: ColumnDef<any>[] = [
                 <IconX />
               </Badge>
             )}
-
-            {row.original.status.toString() === "unassigned" && (
-              <Badge className="bg-zinc-400 font-bold">
-                <span className="font-bold">&#35;{row.original.public_id}</span>
-                <IconX />
-              </Badge>
-            )}
           </TooltipTrigger>
 
           <TooltipContent>
@@ -122,43 +162,21 @@ export const tableColumns: ColumnDef<any>[] = [
         </Tooltip>
       </div>
     ),
+
+    filterFn: (row, columnId, filterValue: string[]) => {
+      if (!filterValue?.length) return true;
+      return filterValue.includes(row.getValue(columnId));
+    },
   },
 
   /* Trip Status */
   {
     id: "status",
     accessorKey: "status",
-    header: ({ column }) => {
-      return <DataTableColumnHeader column={column} title="Status" />;
-    },
-    cell: ({ row }) => (
-      <div>
-        {row.original.status.toString() === "Completed" && (
-          <Badge className="bg-green-400">
-            <IconCheck className="stroke-neutral-900" />
-            {row.original.status}
-          </Badge>
-        )}
-
-        {row.original.status.toString() === "Will Call" && (
-          <Badge className="bg-purple-400">
-            <IconPhoneCall />
-            {row.original.status}
-          </Badge>
-        )}
-
-        {row.original.status.toString() === "Canceled" && (
-          <Badge className="bg-red-400">
-            <IconX />
-            {row.original.status}
-          </Badge>
-        )}
-      </div>
-    ),
+    header: () => <span>Status</span>,
 
     filterFn: (row, id, value: string[]) => {
-      const cellValue = String(row.getValue(id));
-      return value.includes(String(cellValue));
+      return value.includes(row.getValue(id));
     },
   },
 
@@ -230,20 +248,36 @@ export const tableColumns: ColumnDef<any>[] = [
     meta: {
       label: "PU Time",
     },
+
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="PU Time" />
     ),
 
-    cell: ({ row }) => (
-      <div className="flex gap-x-1">
-        <span>{row.original.scheduled_pickup_time}</span>
-        {row.original.actual_pickup_time ? (
-          <span className="text-muted-foreground">
-            &#40;{row.original.actual_pickup_time}&#41;
-          </span>
-        ) : null}
-      </div>
-    ),
+    cell: ({ row }) => {
+      const pickupStatus = row.original.actual_pickup_time
+        ? row.original.actual_pickup_time > row.original.scheduled_pickup_time
+          ? "Late"
+          : "On Time"
+        : "Pending";
+
+      return (
+        <div className="flex gap-x-1">
+          <span>{formatTime(row.original.scheduled_pickup_time)}</span>
+
+          {pickupStatus === "Late" ? (
+            <span className="text-red-400 opacity-80">
+              &#40;{formatTime(row.original.actual_pickup_time)}&#41;
+            </span>
+          ) : null}
+
+          {pickupStatus === "On Time" ? (
+            <span className="text-green-400 opacity-80">
+              &#40;{formatTime(row.original.actual_pickup_time)}&#41;
+            </span>
+          ) : null}
+        </div>
+      );
+    },
   },
 
   /* DO Time */
@@ -257,26 +291,40 @@ export const tableColumns: ColumnDef<any>[] = [
       <DataTableColumnHeader column={column} title="DO Time" />
     ),
 
-    cell: ({ row }) => (
-      <div className="flex gap-x-1">
-        <span>{row.original.scheduled_dropoff_time}</span>
-        {row.original.actual_dropoff_time ? (
-          <span className="text-muted-foreground">
-            &#40;{row.original.actual_dropoff_time}&#41;
-          </span>
-        ) : null}
-      </div>
-    ),
+    cell: ({ row }) => {
+      const pickupStatus = row.original.actual_dropoff_time
+        ? row.original.actual_dropoff_time > row.original.scheduled_dropoff_time
+          ? "Late"
+          : "On Time"
+        : "Pending";
+
+      return (
+        <div className="flex gap-x-1">
+          <span>{formatTime(row.original.scheduled_dropoff_time)}</span>
+
+          {pickupStatus === "Late" ? (
+            <span className="text-red-400 opacity-80">
+              &#40;{formatTime(row.original.actual_dropoff_time)}&#41;
+            </span>
+          ) : null}
+
+          {pickupStatus === "On Time" ? (
+            <span className="text-green-400 opacity-80">
+              &#40;{formatTime(row.original.actual_dropoff_time)}&#41;
+            </span>
+          ) : null}
+        </div>
+      );
+    },
   },
 
   /* Member´s Name */
   {
     id: "passenger_name",
-    accessorFn: (row) =>
-      `${row.passenger_first_name} ${row.passenger_last_name}`,
     meta: {
       label: "Name",
     },
+
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Passenger" />
     ),
@@ -301,6 +349,12 @@ export const tableColumns: ColumnDef<any>[] = [
                 {row.original.level_of_service.toString() === "Wheelchair" && (
                   <IconDisabled className="text-muted-foreground size-4" />
                 )}
+
+                {row.original.level_of_service.toString() ===
+                  "Bariatric Wheelchair" && (
+                  <IconDisabled className="text-muted-foreground size-4" />
+                )}
+
                 {row.original.level_of_service.toString() === "Stretcher" && (
                   <IconBedFlat className="text-muted-foreground size-4" />
                 )}
@@ -309,11 +363,13 @@ export const tableColumns: ColumnDef<any>[] = [
                   <IconWalk className="text-muted-foreground size-4" />
                 )}
 
-                {row.original.level_of_service.toString() === "Curb 2 Curb" && (
+                {row.original.level_of_service.toString() ===
+                  "Curb To Curb" && (
                   <IconWalk className="text-muted-foreground size-4" />
                 )}
 
-                {row.original.level_of_service.toString() === "Door 2 Door" && (
+                {row.original.level_of_service.toString() ===
+                  "Door To Door" && (
                   <IconOld className="text-muted-foreground size-4" />
                 )}
               </TooltipTrigger>
@@ -326,13 +382,21 @@ export const tableColumns: ColumnDef<any>[] = [
         </div>
       );
     },
+
+    accessorFn: (row) =>
+      `${row.passenger_first_name} ${row.passenger_last_name}`,
   },
 
   /* Member Phone Number */
   {
     id: "passenger_phone_number",
     accessorKey: "passenger_phone_number",
+    meta: {
+      label: "Phone",
+    },
+
     header: "Phone",
+
     cell: ({ row }) => (
       <CopyableItem
         label={row.original.passenger_phone_number?.toString() ?? ""}
@@ -350,6 +414,7 @@ export const tableColumns: ColumnDef<any>[] = [
     meta: {
       label: "PU Address",
     },
+
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="PU Address" />
     ),
@@ -358,25 +423,40 @@ export const tableColumns: ColumnDef<any>[] = [
       const addressLink = `https://www.google.com/maps?q=${encodeURIComponent(row.original.pickup_address)}`;
 
       return (
-        <div>
+        <div className="flex items-center">
           {/* Address */}
           <CopyableItem value={row.original.pickup_address}>
             {row.original.pickup_address}
           </CopyableItem>
 
-          {/* Facility */}
-          {row.original.pickup_location_name ? (
-            <>
-              <span className="text-muted-foreground">
-                {row.original.pickup_location_name}
-              </span>
-            </>
-          ) : null}
+          <div className="flex items-center gap-x-2">
+            {/* Facility */}
+            {row.original.pickup_location_name ? (
+              <Tooltip>
+                <TooltipTrigger>
+                  <IconInfoCircle />
+                </TooltipTrigger>
 
-          {/* Google maps link */}
-          <CopyableItem value={addressLink}>
-            <IconBrandGoogleMaps />
-          </CopyableItem>
+                <TooltipContent>
+                  <span className="capitalize">
+                    {row.original.pickup_location_name}
+                  </span>
+                </TooltipContent>
+              </Tooltip>
+            ) : null}
+
+            <CopyableItem
+              label={row.original.pickup_phone_number?.toString() ?? ""}
+              value={row.original.pickup_phone_number?.toString() ?? ""}
+            >
+              <IconPhone />
+            </CopyableItem>
+
+            {/* Google maps link */}
+            <CopyableItem value={addressLink}>
+              <IconBrandGoogleMaps />
+            </CopyableItem>
+          </div>
         </div>
       );
     },
@@ -397,25 +477,40 @@ export const tableColumns: ColumnDef<any>[] = [
       const addressLink = `https://www.google.com/maps?q=${encodeURIComponent(row.original.dropoff_address)}`;
 
       return (
-        <div>
+        <div className="flex items-center">
           {/* Address */}
           <CopyableItem value={row.original.dropoff_address}>
             {row.original.dropoff_address}
           </CopyableItem>
 
-          {/* Facility */}
-          {row.original.dropoff_location_name ? (
-            <>
-              <span className="text-muted-foreground">
-                {row.original.dropoff_location_name}
-              </span>
-            </>
-          ) : null}
+          <div className="flex items-center gap-x-2">
+            {/* Facility */}
+            {row.original.dropoff_location_name ? (
+              <Tooltip>
+                <TooltipTrigger>
+                  <IconInfoCircle />
+                </TooltipTrigger>
 
-          {/* Google maps link */}
-          <CopyableItem value={addressLink}>
-            <IconBrandGoogleMaps />
-          </CopyableItem>
+                <TooltipContent>
+                  <span className="capitalize">
+                    {row.original.dropoff_location_name}
+                  </span>
+                </TooltipContent>
+              </Tooltip>
+            ) : null}
+
+            <CopyableItem
+              label={row.original.dropoff_phone_number?.toString() ?? ""}
+              value={row.original.dropoff_phone_number?.toString() ?? ""}
+            >
+              <IconPhone />
+            </CopyableItem>
+
+            {/* Google maps link */}
+            <CopyableItem value={addressLink} label="Copy Google Maps Link">
+              <IconBrandGoogleMaps />
+            </CopyableItem>
+          </div>
         </div>
       );
     },
@@ -429,7 +524,10 @@ export const tableColumns: ColumnDef<any>[] = [
       <DataTableColumnHeader column={column} title="Miles" />
     ),
 
-    cell: ({ row }) => <span>{row.original.mileage?.toString()} </span>,
+    cell: ({ row }) => {
+      const miles = parseFloat(row.original.mileage?.toString() ?? "0");
+      return <span>{miles.toFixed(2)} mi</span>;
+    },
   },
 
   /* LOS */

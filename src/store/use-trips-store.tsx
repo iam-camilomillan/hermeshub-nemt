@@ -8,6 +8,7 @@ interface TripsStore {
       from: Date;
       to: Date;
     };
+    status: string[];
   };
   setFiltersData: (filters: TripsStore["filtersData"]) => void;
 }
@@ -19,6 +20,7 @@ export const useTripsStore = create<TripsStore>((set) => ({
       from: new Date(),
       to: new Date(),
     },
+    status: [] as string[],
   },
   setFiltersData: (filters) => set({ filtersData: filters }),
 }));

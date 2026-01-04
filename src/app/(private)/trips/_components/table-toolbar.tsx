@@ -28,7 +28,7 @@ import {
 import { toast } from "sonner";
 
 /* Icons Imports */
-import { IconPlus, IconX } from "@tabler/icons-react";
+import { IconPlus, IconRefresh, IconX } from "@tabler/icons-react";
 
 /* Components Imports */
 import TableDateFilter from "~/app/(private)/trips/_components/table-date-filter";
@@ -37,9 +37,11 @@ import TableRowFilter from "~/app/(private)/trips/_components/table-row-filter";
 /* Store Imports */
 import { useDrawerStore } from "~/store/use-drawer-store";
 
-/* Utils Imports */
-import { tableFilterSettings } from "~/app/(private)/members/utils/table-filter-settings";
+/* API Imports */
 import { api } from "~/trpc/react";
+
+/* Utils Imports */
+import { tableFilterSettings } from "~/app/(private)/trips/utils/table-filter-settings";
 import Papa from "papaparse";
 
 /* Type Imports */
@@ -52,11 +54,12 @@ interface TableToolbarProps<TData> {
 
 const TableToolbar = <TData,>({ table }: TableToolbarProps<TData>) => {
   /* Local states */
+  const [rotating, setRotating] = useState(false);
   const [searchBy, setSearchBy] = useState(
     tableFilterSettings.searchBy.defaultValue,
   );
   const [selectedPayer, setSelectedPayer] = useState<
-    "ALIVI" | "MODIVCARE" | "SAFERIDE" | "ACCESS TO CARE"
+    "ALIVI" | "MODIVCARE" | "SAFERIDE" | "ACCESS TO CARE" | "ROUTEGENIE"
   >("ALIVI");
   const [file, setFile] = useState<File | null>(null);
 
@@ -116,6 +119,17 @@ const TableToolbar = <TData,>({ table }: TableToolbarProps<TData>) => {
     useDrawerStore.setState({ isDrawerOpen: true });
   };
 
+  /* Refresh table action */
+  const handleRefreshButton = async () => {
+    setRotating(true);
+
+    useDrawerStore.setState({ refreshData: true });
+
+    setTimeout(() => {
+      setRotating(false);
+    }, 300);
+  };
+
   return (
     <div className="flex items-center gap-x-2">
       {/* Search */}
@@ -163,6 +177,7 @@ const TableToolbar = <TData,>({ table }: TableToolbarProps<TData>) => {
           { label: "Completed", value: "Completed" },
           { label: "Will Call", value: "Will Call" },
           { label: "Canceled", value: "Canceled" },
+          { label: "Unassigned", value: "unassigned" },
         ]}
       />
 
@@ -206,6 +221,7 @@ const TableToolbar = <TData,>({ table }: TableToolbarProps<TData>) => {
                   <SelectItem value="MODIVCARE">MODIVCARE</SelectItem>
                   <SelectItem value="SAFERIDE">SAFERIDE</SelectItem>
                   <SelectItem value="ACCESS TO CARE">ACCESS TO CARE</SelectItem>
+                  <SelectItem value="ROUTEGENIE">ROUTEGENIE</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -244,6 +260,23 @@ const TableToolbar = <TData,>({ table }: TableToolbarProps<TData>) => {
       <Button size={"sm"} onClick={handleAddButton}>
         <IconPlus />
         <span>Add Trip</span>
+      </Button>
+
+      {/* Refresh table button */}
+      <Button
+        size={"sm"}
+        variant="ghost"
+        onClick={handleRefreshButton}
+        className="group"
+      >
+        <IconRefresh
+          className={`transition-transform duration-300 ease-in-out group-hover:-rotate-90`}
+          style={
+            rotating
+              ? { transform: "rotate(-180deg)" }
+              : { transform: "rotate(0deg)" }
+          }
+        />
       </Button>
     </div>
   );
